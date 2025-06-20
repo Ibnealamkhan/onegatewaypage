@@ -192,7 +192,7 @@ function App() {
 
   const clients = [
     { name: "PePlus", logo: "PP", color: "bg-indigo-600", description: "Mobile Recharge Platform" },
-    { name: "BillPe", logo: "https://play-lh.googleusercontent.com/QRh3SOM1KJv2S2IPWYfJH4cHBEADpgCc5sXWYI7TW4nGAFya0DFBn-TETFvWNqMWTyk", color: "bg-rose-600", description: "Bill Payment Solutions" , url: "https://billpe.app/", isImage: true, isExternalImage: true},
+    { name: "BillPe", logo: "https://play-lh.googleusercontent.com/QRh3SOM1KJv2S2IPWYfJH4cHBEADpgCc5sXWYI7TW4nGAFya0DFBn-TETFvWNqMWTyk", color: "bg-white-600", description: "Bill Payment Solutions" , url: "https://billpe.app/", isImage: true, isExternalImage: true},
     { name: "Pay2Back", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlDersm3uNoCFYDGNKgKDPXMN8yZgjXNe_8g&s", color: "bg-white-600", description: "Cashback & Recharge" , url: "https://pay2back.in/", isImage: true, isExternalImage: true  },
     { name: "BillHub", logo: "billhub-logo.jpg", color: "bg-white", description: "Multi-Service Platform", isImage: true, url: "https://app.billhub.in/" },
     { name: "Okpe", logo: "https://play-lh.googleusercontent.com/tBkY2pHRdp7a4bChtpPqjCpJTVm3VwimXV0D4hV4IH6W_8neCmM_6FrVLWxR-OCgryU", color: "bg-white", description: "Mobile Recharge App", url: "https://okpe.in/", isImage: true, isExternalImage: true }

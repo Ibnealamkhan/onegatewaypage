@@ -186,7 +186,7 @@ function App() {
   const partners = [
     { name: "Cashfree", logo: "cashfree.png", color: "bg-white", isImage: true },
     { name: "Sabpaisa", logo: "SP", color: "bg-green-600", isImage: false },
-    { name: "Razorpay", logo: "RP", color: "bg-cyan-600", isImage: false }
+    { name: "Razorpay", logo: "razor_pay_icon-ICtywSbN.png", color: "bg-white", isImage: true }
   ];
 
   const clients = [

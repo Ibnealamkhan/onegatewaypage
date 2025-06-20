@@ -829,7 +829,7 @@ function App() {
           </div>
 
           <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 mb-4 md:mb-0">&copy; 2025 onegateway. All rights reserved. Regulated by RBI.</p>
+            <p className="text-gray-400 mb-4 md:mb-0">&copy; 2025 onegateway. All rights reserved.</p>
             
             {/* Footer Logo */}
             <div className="flex items-center space-x-3">

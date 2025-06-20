@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { 
   Zap, 
   Shield, 
@@ -26,6 +26,21 @@ import {
   trackModalOpen,
   trackSectionView 
 } from './lib/analytics';
+import { 
+  sanitizeInput, 
+  isValidEmail, 
+  isValidPhone, 
+  formRateLimiter,
+  setupSecurityHeaders 
+} from './lib/security';
+import { 
+  initPerformanceMonitoring, 
+  preloadCriticalResources,
+  registerServiceWorker 
+} from './lib/performance';
+import { useIntersectionObserver } from './hooks/useIntersectionObserver';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSpinner from './components/LoadingSpinner';
 
 // Custom Logo Component
 const Logo = ({ className = "h-8 w-8" }: { className?: string }) => (
@@ -33,6 +48,7 @@ const Logo = ({ className = "h-8 w-8" }: { className?: string }) => (
     className={className}
     viewBox="0 0 699.03 699.04" 
     xmlns="http://www.w3.org/2000/svg"
+    aria-label="OneGateway Logo"
   >
     <defs>
       <linearGradient id="linear-gradient" x1="627.75" y1="636.27" x2="404.27" y2="363.69" gradientUnits="userSpaceOnUse">
@@ -54,12 +70,34 @@ const Logo = ({ className = "h-8 w-8" }: { className?: string }) => (
   </svg>
 );
 
+// Animated section component
+const AnimatedSection = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
+  const { elementRef, isIntersecting } = useIntersectionObserver({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+
+  return (
+    <div 
+      ref={elementRef}
+      className={`transition-all duration-1000 ${
+        isIntersecting 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+};
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -68,9 +106,35 @@ function App() {
     message: ''
   });
 
+  // Initialize performance monitoring and security
+  useEffect(() => {
+    // Hide loading screen
+    document.body.classList.add('app-loaded');
+    
+    // Initialize performance monitoring
+    initPerformanceMonitoring();
+    
+    // Preload critical resources
+    preloadCriticalResources();
+    
+    // Register service worker
+    registerServiceWorker();
+    
+    // Setup security headers
+    setupSecurityHeaders();
+    
+    // Track page view
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'page_view', {
+        page_title: 'OneGateway - Home',
+        page_location: window.location.href
+      });
+    }
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -89,15 +153,54 @@ function App() {
       });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters';
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!isValidEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    // Phone validation
+    if (!formData.phone.trim()) {
+      errors.phone = 'Phone number is required';
+    } else if (!isValidPhone(formData.phone)) {
+      errors.phone = 'Please enter a valid 10-digit phone number';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    const sanitizedValue = sanitizeInput(value);
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: sanitizedValue
     });
+
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors({
+        ...formErrors,
+        [name]: ''
+      });
+    }
   };
 
   const sendTelegramNotification = async (contactData: Omit<ContactInquiry, 'id' | 'created_at' | 'updated_at'>) => {
@@ -122,13 +225,26 @@ function App() {
       return result;
     } catch (error) {
       console.error('Error sending Telegram notification:', error);
-      // Don't throw here - we don't want to fail the form submission if Telegram fails
       return null;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    // Rate limiting
+    const userIdentifier = formData.email;
+    if (!formRateLimiter.isAllowed(userIdentifier)) {
+      const remainingTime = Math.ceil(formRateLimiter.getRemainingTime(userIdentifier) / 1000);
+      alert(`Please wait ${remainingTime} seconds before submitting again.`);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -168,6 +284,7 @@ function App() {
       setShowContactForm(false);
       setShowSuccessPopup(true);
       setFormData({ name: '', email: '', phone: '', company: '', message: '' });
+      setFormErrors({});
       
       // Auto-hide success popup after 5 seconds
       setTimeout(() => {
@@ -237,612 +354,635 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Success Popup Modal */}
-      {showSuccessPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full transform animate-bounce">
-            {/* Success Animation */}
-            <div className="text-center mb-6">
-              <div className="relative mx-auto w-20 h-20 mb-4">
-                {/* Animated background circle */}
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
-                {/* Success checkmark */}
-                <div className="relative flex items-center justify-center w-full h-full">
-                  <Check className="h-10 w-10 text-white animate-bounce" />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-white">
+        {/* Success Popup Modal */}
+        {showSuccessPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full transform animate-bounce">
+              {/* Success Animation */}
+              <div className="text-center mb-6">
+                <div className="relative mx-auto w-20 h-20 mb-4">
+                  {/* Animated background circle */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
+                  {/* Success checkmark */}
+                  <div className="relative flex items-center justify-center w-full h-full">
+                    <Check className="h-10 w-10 text-white animate-bounce" />
+                  </div>
+                  {/* Sparkle effects */}
+                  <div className="absolute -top-2 -right-2">
+                    <Sparkles className="h-6 w-6 text-yellow-400 animate-spin" />
+                  </div>
+                  <div className="absolute -bottom-2 -left-2">
+                    <Sparkles className="h-4 w-4 text-blue-400 animate-ping" />
+                  </div>
                 </div>
-                {/* Sparkle effects */}
-                <div className="absolute -top-2 -right-2">
-                  <Sparkles className="h-6 w-6 text-yellow-400 animate-spin" />
-                </div>
-                <div className="absolute -bottom-2 -left-2">
-                  <Sparkles className="h-4 w-4 text-blue-400 animate-ping" />
-                </div>
-              </div>
-              
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Message Sent Successfully! 🎉
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Thank you for reaching out! Our team will review your inquiry and get back to you within 24 hours.
-              </p>
-            </div>
-
-            {/* Success details */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 mb-6">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="bg-green-100 rounded-full p-2">
-                  <Mail className="h-4 w-4 text-green-600" />
-                </div>
-                <span className="text-sm text-green-800 font-medium">
-                  Confirmation email sent to your inbox
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="bg-blue-100 rounded-full p-2">
-                  <Phone className="h-4 w-4 text-blue-600" />
-                </div>
-                <span className="text-sm text-blue-800 font-medium">
-                  Our team will call you soon
-                </span>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => setShowSuccessPopup(false)}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
-              >
-                <CheckCircle className="h-5 w-5 mr-2" />
-                Got it!
-              </button>
-              <button
-                onClick={() => {
-                  setShowSuccessPopup(false);
-                  handleContactButtonClick('success-popup');
-                }}
-                className="flex-1 border-2 border-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
-              >
-                <Send className="h-5 w-5 mr-2" />
-                Send Another
-              </button>
-            </div>
-
-            {/* Auto-close indicator */}
-            <div className="mt-4 text-center">
-              <div className="inline-flex items-center text-xs text-gray-500">
-                <div className="w-2 h-2 bg-gray-300 rounded-full mr-2 animate-pulse"></div>
-                This popup will close automatically in a few seconds
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Contact Form Modal */}
-      {showContactForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Contact Us</h3>
-              <button 
-                onClick={() => setShowContactForm(false)}
-                className="text-gray-400 hover:text-gray-600"
-                disabled={isSubmitting}
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                <input
-                  type="text"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea
-                  name="message"
-                  rows={4}
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                  placeholder="Tell us about your requirements..."
-                ></textarea>
-              </div>
-              
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-5 w-5 mr-2" />
-                    Send Message
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className={`fixed w-full z-40 transition-all duration-300 ${
-        scrollY > 50 ? 'bg-white shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <div className="flex items-center space-x-3">
-                <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
-                  <Logo className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-xl font-bold text-gray-900">onegateway</span>
-              </div>
-            </div>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-700 hover:text-blue-600 font-medium">Features</a>
-              <a href="#clients" className="text-gray-700 hover:text-blue-600 font-medium">Clients</a>
-              <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium">Pricing</a>
-              <a href="#partners" className="text-gray-700 hover:text-blue-600 font-medium">Partners</a>
-              <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
-              <button 
-                onClick={() => handleContactButtonClick('navigation')}
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                Contact Us
-              </button>
-            </div>
-
-            <div className="md:hidden">
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Features</a>
-              <a href="#clients" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Clients</a>
-              <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Pricing</a>
-              <a href="#partners" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Partners</a>
-              <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600">Contact</a>
-              <button 
-                onClick={() => handleContactButtonClick('mobile-menu')}
-                className="w-full text-left bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-2 rounded-lg font-medium"
-              >
-                Contact Us
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-4 py-2 text-sm font-medium text-blue-800">
-                  <Star className="h-4 w-4 mr-2" />
-                  RBI Authorized Payment Gateway Partner
-                </div>
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                    Recharge Apps
-                  </span>
-                  <br />
-                  Made Simple
-                </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Power your mobile recharge business with India's most affordable payment gateway. 
-                  Only <span className="font-bold text-green-600">0.10% charges</span> with 
-                  <span className="font-bold text-blue-600"> instant settlement</span>.
+                
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Message Sent Successfully! 🎉
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Thank you for reaching out! Our team will review your inquiry and get back to you within 24 hours.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={() => handleContactButtonClick('hero-cta')}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
+              {/* Success details */}
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 mb-6">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="bg-green-100 rounded-full p-2">
+                    <Mail className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-sm text-green-800 font-medium">
+                    Confirmation email sent to your inbox
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-100 rounded-full p-2">
+                    <Phone className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <span className="text-sm text-blue-800 font-medium">
+                    Our team will call you soon
+                  </span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => setShowSuccessPopup(false)}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
                 >
-                  Contact Us
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <CheckCircle className="h-5 w-5 mr-2" />
+                  Got it!
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSuccessPopup(false);
+                    handleContactButtonClick('success-popup');
+                  }}
+                  className="flex-1 border-2 border-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
+                >
+                  <Send className="h-5 w-5 mr-2" />
+                  Send Another
                 </button>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 pt-8">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">{stat.number}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </div>
-                ))}
+              {/* Auto-close indicator */}
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center text-xs text-gray-500">
+                  <div className="w-2 h-2 bg-gray-300 rounded-full mr-2 animate-pulse"></div>
+                  This popup will close automatically in a few seconds
+                </div>
               </div>
             </div>
+          </div>
+        )}
 
-            <div className="relative">
-              <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                <div className="absolute -top-4 -right-4 bg-green-500 text-white rounded-full p-3">
-                  <CheckCircle className="h-6 w-6" />
+        {/* Contact Form Modal */}
+        {showContactForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">Contact Us</h3>
+                <button 
+                  onClick={() => setShowContactForm(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                  disabled={isSubmitting}
+                  aria-label="Close contact form"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
+                      formErrors.name ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    aria-describedby={formErrors.name ? 'name-error' : undefined}
+                  />
+                  {formErrors.name && (
+                    <p id="name-error" className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+                  )}
                 </div>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Transaction Fee</span>
-                    <span className="text-3xl font-bold text-green-600">0.10%</span>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
+                      formErrors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    aria-describedby={formErrors.email ? 'email-error' : undefined}
+                  />
+                  {formErrors.email && (
+                    <p id="email-error" className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
+                      formErrors.phone ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    aria-describedby={formErrors.phone ? 'phone-error' : undefined}
+                  />
+                  {formErrors.phone && (
+                    <p id="phone-error" className="text-red-500 text-sm mt-1">{formErrors.phone}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <textarea
+                    name="message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                    placeholder="Tell us about your requirements..."
+                  ></textarea>
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                  {isSubmitting ? (
+                    <LoadingSpinner size="sm" color="white" />
+                  ) : (
+                    <>
+                      <Send className="h-5 w-5 mr-2" />
+                      Send Message
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <nav className={`fixed w-full z-40 transition-all duration-300 ${
+          scrollY > 50 ? 'bg-white shadow-lg' : 'bg-transparent'
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
+                    <Logo className="h-6 w-6 text-white" />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Settlement Time</span>
-                    <span className="text-lg font-semibold text-blue-600">Instant</span>
+                  <span className="text-xl font-bold text-gray-900">onegateway</span>
+                </div>
+              </div>
+              
+              <div className="hidden md:flex items-center space-x-8">
+                <a href="#features" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Features</a>
+                <a href="#clients" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Clients</a>
+                <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Pricing</a>
+                <a href="#partners" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Partners</a>
+                <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Contact</a>
+                <button 
+                  onClick={() => handleContactButtonClick('navigation')}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                >
+                  Contact Us
+                </button>
+              </div>
+
+              <div className="md:hidden">
+                <button 
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Toggle mobile menu"
+                >
+                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden bg-white border-t">
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Features</a>
+                <a href="#clients" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Clients</a>
+                <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
+                <a href="#partners" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Partners</a>
+                <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+                <button 
+                  onClick={() => handleContactButtonClick('mobile-menu')}
+                  className="w-full text-left bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-2 rounded-lg font-medium"
+                >
+                  Contact Us
+                </button>
+              </div>
+            </div>
+          )}
+        </nav>
+
+        {/* Hero Section */}
+        <section className="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <AnimatedSection className="space-y-8">
+                <div className="space-y-4">
+                  <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-4 py-2 text-sm font-medium text-blue-800">
+                    <Star className="h-4 w-4 mr-2" />
+                    RBI Authorized Payment Gateway Partner
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Success Rate</span>
-                    <span className="text-lg font-semibold text-cyan-600">99.9%</span>
+                  <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                    <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                      Recharge Apps
+                    </span>
+                    <br />
+                    Made Simple
+                  </h1>
+                  <p className="text-xl text-gray-600 leading-relaxed">
+                    Power your mobile recharge business with India's most affordable payment gateway. 
+                    Only <span className="font-bold text-green-600">0.10% charges</span> with 
+                    <span className="font-bold text-blue-600"> instant settlement</span>.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button 
+                    onClick={() => handleContactButtonClick('hero-cta')}
+                    className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
+                  >
+                    Contact Us
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-4 gap-4 pt-8">
+                  {stats.map((stat, index) => (
+                    <div key={index} className="text-center">
+                      <div className="text-2xl font-bold text-gray-900">{stat.number}</div>
+                      <div className="text-sm text-gray-600">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </AnimatedSection>
+
+              <AnimatedSection className="relative">
+                <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className="absolute -top-4 -right-4 bg-green-500 text-white rounded-full p-3">
+                    <CheckCircle className="h-6 w-6" />
                   </div>
-                  <div className="pt-4 border-t">
-                    <div className="flex items-center space-x-2">
-                      <Smartphone className="h-5 w-5 text-gray-400" />
-                      <span className="text-sm text-gray-600">Mobile Recharge Ready</span>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Transaction Fee</span>
+                      <span className="text-3xl font-bold text-green-600">0.10%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Settlement Time</span>
+                      <span className="text-lg font-semibold text-blue-600">Instant</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Success Rate</span>
+                      <span className="text-lg font-semibold text-cyan-600">99.9%</span>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <div className="flex items-center space-x-2">
+                        <Smartphone className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm text-gray-600">Mobile Recharge Ready</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </AnimatedSection>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Our Gateway?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built specifically for recharge applications with industry-leading features and reliability
-            </p>
-          </div>
+        {/* Features Section */}
+        <section id="features" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Why Choose Our Gateway?
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Built specifically for recharge applications with industry-leading features and reliability
+              </p>
+            </AnimatedSection>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div 
-                key={index} 
-                className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
-              >
-                <div className={`${feature.color} rounded-lg p-3 w-fit mb-4 text-white group-hover:scale-110 transition-transform duration-300`}>
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Clients Section */}
-      <section id="clients" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Trusted by Leading Brands
-            </h2>
-            <p className="text-xl text-gray-600">
-              Powering recharge and bill payment platforms across India
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {clients.map((client, index) => {
-              const ClientCard = (
-                <div 
-                  className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group hover:-translate-y-2 ${
-                    client.url ? 'cursor-pointer' : ''
-                  }`}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, index) => (
+                <AnimatedSection 
+                  key={index}
+                  className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
                 >
-                  <div className={`${client.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 ${
-                    client.isImage ? 'border border-gray-200 overflow-hidden' : 'text-white text-lg font-bold'
-                  }`}>
-                    {client.isImage ? (
+                  <div className={`${feature.color} rounded-lg p-3 w-fit mb-4 text-white group-hover:scale-110 transition-transform duration-300`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </AnimatedSection>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Clients Section */}
+        <section id="clients" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Trusted by Leading Brands
+              </h2>
+              <p className="text-xl text-gray-600">
+                Powering recharge and bill payment platforms across India
+              </p>
+            </AnimatedSection>
+
+            <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {clients.map((client, index) => {
+                const ClientCard = (
+                  <AnimatedSection 
+                    className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group hover:-translate-y-2 ${
+                      client.url ? 'cursor-pointer' : ''
+                    }`}
+                  >
+                    <div className={`${client.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 ${
+                      client.isImage ? 'border border-gray-200 overflow-hidden' : 'text-white text-lg font-bold'
+                    }`}>
+                      {client.isImage ? (
+                        <img 
+                          src={client.isExternalImage ? client.logo : `/${client.logo}`}
+                          alt={client.name}
+                          className="w-12 h-12 object-contain rounded-full"
+                          crossOrigin={client.isExternalImage ? "anonymous" : undefined}
+                          loading="lazy"
+                        />
+                      ) : (
+                        client.logo
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1 flex items-center justify-center">
+                      {client.name}
+                      {client.url && <ExternalLink className="h-4 w-4 ml-2 text-gray-400" />}
+                    </h3>
+                    <p className="text-sm text-gray-600">{client.description}</p>
+                  </AnimatedSection>
+                );
+
+                return client.url ? (
+                  <a 
+                    key={index}
+                    href={client.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    {ClientCard}
+                  </a>
+                ) : (
+                  <div key={index}>
+                    {ClientCard}
+                  </div>
+                );
+              })}
+            </div>
+
+            <AnimatedSection className="mt-12 text-center">
+              <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-6 py-3">
+                <Users className="h-5 w-5 text-blue-600 mr-2" />
+                <span className="text-blue-800 font-medium">Join 100+ successful businesses</span>
+              </div>
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* Partners Section */}
+        <section id="partners" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                RBI Authorized Partners
+              </h2>
+              <p className="text-xl text-gray-600">
+                Integrated with India's most trusted payment gateway providers
+              </p>
+            </AnimatedSection>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              {partners.map((partner, index) => (
+                <AnimatedSection 
+                  key={index}
+                  className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 hover:border-blue-200"
+                >
+                  <div className={`${partner.color} w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 ${partner.isImage ? 'border border-gray-200' : ''}`}>
+                    {partner.isImage ? (
                       <img 
-                        src={client.isExternalImage ? client.logo : `/${client.logo}`}
-                        alt={client.name}
-                        className="w-12 h-12 object-contain rounded-full"
-                        crossOrigin={client.isExternalImage ? "anonymous" : undefined}
+                        src={`/${partner.logo}`} 
+                        alt={partner.name}
+                        className="w-12 h-12 object-contain"
+                        loading="lazy"
                       />
                     ) : (
-                      client.logo
+                      <span className="text-white text-xl font-bold">{partner.logo}</span>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 flex items-center justify-center">
-                    {client.name}
-                    {client.url && <ExternalLink className="h-4 w-4 ml-2 text-gray-400" />}
-                  </h3>
-                  <p className="text-sm text-gray-600">{client.description}</p>
-                </div>
-              );
-
-              return client.url ? (
-                <a 
-                  key={index}
-                  href={client.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  {ClientCard}
-                </a>
-              ) : (
-                <div key={index}>
-                  {ClientCard}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-12 text-center">
-            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-6 py-3">
-              <Users className="h-5 w-5 text-blue-600 mr-2" />
-              <span className="text-blue-800 font-medium">Join 100+ successful businesses</span>
+                  <h3 className="text-xl font-semibold text-gray-900">{partner.name}</h3>
+                  <p className="text-gray-600 mt-2">RBI Authorized</p>
+                </AnimatedSection>
+              ))}
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Partners Section */}
-      <section id="partners" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              RBI Authorized Partners
-            </h2>
-            <p className="text-xl text-gray-600">
-              Integrated with India's most trusted payment gateway providers
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {partners.map((partner, index) => (
-              <div 
-                key={index}
-                className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 hover:border-blue-200"
-              >
-                <div className={`${partner.color} w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 ${partner.isImage ? 'border border-gray-200' : ''}`}>
-                  {partner.isImage ? (
-                    <img 
-                      src={`/${partner.logo}`} 
-                      alt={partner.name}
-                      className="w-12 h-12 object-contain"
-                    />
-                  ) : (
-                    <span className="text-white text-xl font-bold">{partner.logo}</span>
-                  )}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900">{partner.name}</h3>
-                <p className="text-gray-600 mt-2">RBI Authorized</p>
+            <AnimatedSection className="mt-12 text-center">
+              <div className="inline-flex items-center bg-green-100 rounded-full px-6 py-3">
+                <Shield className="h-5 w-5 text-green-600 mr-2" />
+                <span className="text-green-800 font-medium">100% Secure & Compliant</span>
               </div>
-            ))}
+            </AnimatedSection>
           </div>
+        </section>
 
-          <div className="mt-12 text-center">
-            <div className="inline-flex items-center bg-green-100 rounded-full px-6 py-3">
-              <Shield className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-green-800 font-medium">100% Secure & Compliant</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Transparent Pricing
-            </h2>
-            <p className="text-xl text-gray-600">
-              No hidden fees, no setup costs, no monthly charges
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-8 text-white text-center">
-              <div className="mb-8">
-                <h3 className="text-3xl font-bold mb-4">Pay Per Transaction</h3>
-                <div className="text-6xl font-bold mb-2">0.10%</div>
-                <p className="text-xl opacity-90">Per successful transaction</p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white/10 rounded-lg p-4">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <div className="font-semibold">No Setup Fee</div>
-                </div>
-                <div className="bg-white/10 rounded-lg p-4">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <div className="font-semibold">No Monthly Charges</div>
-                </div>
-                <div className="bg-white/10 rounded-lg p-4">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <div className="font-semibold">Instant Settlement</div>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => handleContactButtonClick('pricing-cta')}
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                Contact Us Now
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-              Ready to Transform Your Recharge Business?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join thousands of businesses already using our payment gateway for their mobile recharge applications
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={() => handleContactButtonClick('cta-primary')}
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-              >
-                Contact Us
-              </button>
-              <button 
-                onClick={() => handleContactButtonClick('cta-secondary')}
-                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200"
-              >
-                Get Quote
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer id="contact" className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="col-span-2">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
-                  <Logo className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-xl font-bold">onegateway</span>
-              </div>
-              <p className="text-gray-400 mb-6 max-w-md">
-                Empowering mobile recharge businesses with the most affordable and reliable payment gateway solution in India.
+        {/* Pricing Section */}
+        <section id="pricing" className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Transparent Pricing
+              </h2>
+              <p className="text-xl text-gray-600">
+                No hidden fees, no setup costs, no monthly charges
               </p>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-blue-400" />
-                  <span>+916001011509</span>
+            </AnimatedSection>
+
+            <AnimatedSection className="max-w-4xl mx-auto">
+              <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-8 text-white text-center">
+                <div className="mb-8">
+                  <h3 className="text-3xl font-bold mb-4">Pay Per Transaction</h3>
+                  <div className="text-6xl font-bold mb-2">0.10%</div>
+                  <p className="text-xl opacity-90">Per successful transaction</p>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="h-5 w-5 text-blue-400" />
-                  <span>support@onegateway.in</span>
+
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                    <div className="font-semibold">No Setup Fee</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                    <div className="font-semibold">No Monthly Charges</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                    <div className="font-semibold">Instant Settlement</div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="h-5 w-5 text-blue-400" />
-                  <span>Dhekiajuli,Sonitpur,Assam-784110</span>
+
+                <button 
+                  onClick={() => handleContactButtonClick('pricing-cta')}
+                  className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                >
+                  Contact Us Now
+                </button>
+              </div>
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-600">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <AnimatedSection className="max-w-3xl mx-auto">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
+                Ready to Transform Your Recharge Business?
+              </h2>
+              <p className="text-xl text-blue-100 mb-8">
+                Join thousands of businesses already using our payment gateway for their mobile recharge applications
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => handleContactButtonClick('cta-primary')}
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  Contact Us
+                </button>
+                <button 
+                  onClick={() => handleContactButtonClick('cta-secondary')}
+                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200"
+                >
+                  Get Quote
+                </button>
+              </div>
+            </AnimatedSection>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer id="contact" className="bg-gray-900 text-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="col-span-2">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
+                    <Logo className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-xl font-bold">onegateway</span>
                 </div>
+                <p className="text-gray-400 mb-6 max-w-md">
+                  Empowering mobile recharge businesses with the most affordable and reliable payment gateway solution in India.
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <Phone className="h-5 w-5 text-blue-400" />
+                    <a href="tel:+916001011509" className="hover:text-white transition-colors">+916001011509</a>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Mail className="h-5 w-5 text-blue-400" />
+                    <a href="mailto:support@onegateway.in" className="hover:text-white transition-colors">support@onegateway.in</a>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="h-5 w-5 text-blue-400" />
+                    <span>Dhekiajuli,Sonitpur,Assam-784110</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">API Reference</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Company</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                  <li>
+                    <button 
+                      onClick={() => handleContactButtonClick('footer')}
+                      className="hover:text-white transition-colors"
+                    >
+                      Contact
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Reference</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-                <li>
-                  <button 
-                    onClick={() => handleContactButtonClick('footer')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Contact
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 mb-4 md:mb-0">&copy; 2025 onegateway. All rights reserved.</p>
-            
-            {/* Footer Logo */}
-            <div className="flex items-center space-x-3">
-              <span className="text-gray-400 text-sm">Powered by</span>
-              <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
-                <Logo className="h-5 w-5 text-white" />
+            <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+              <p className="text-gray-400 mb-4 md:mb-0">&copy; 2025 onegateway. All rights reserved.</p>
+              
+              {/* Footer Logo */}
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-400 text-sm">Powered by</span>
+                <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
+                  <Logo className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-gray-300 font-medium">onegateway</span>
               </div>
-              <span className="text-gray-300 font-medium">onegateway</span>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </ErrorBoundary>
   );
 }
 

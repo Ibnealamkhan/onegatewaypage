@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://onegateway.in/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Block access to sensitive areas
+Disallow: /api/
+Disallow: /.env
+Disallow: /admin/
+Disallow: /private/
+
+# Allow access to important pages
+Allow: /
+Allow: /index.html
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /manifest.json
+Allow: /sw.js
+
+# Block common bot traps
+Disallow: /wp-admin/
+Disallow: /wp-content/
+Disallow: /wp-includes/
+Disallow: /cgi-bin/
+Disallow: /admin/
+Disallow: /administrator/

@@ -191,7 +191,7 @@ function App() {
   ];
 
   const clients = [
-    { name: "PePlus", logo: "https://play-lh.googleusercontent.com/1YDx0xZBLl4-my6klDo_Y-idM4HW4IHgnQkiijiUE-oblAZ4BN_a_93PAmqpEQs4QQoB=w240-h480-rw", color: "bg-indigo-600", description: "Mobile Recharge Platform" , url: "https://peplus.in/", isImage: true, isExternalImage: true},
+    { name: "PePlus", logo: "https://play-lh.googleusercontent.com/1YDx0xZBLl4-my6klDo_Y-idM4HW4IHgnQkiijiUE-oblAZ4BN_a_93PAmqpEQs4QQoB=w240-h480-rw", color: "bg-white-600", description: "Mobile Recharge Platform" , url: "https://peplus.in/", isImage: true, isExternalImage: true},
     { name: "BillPe", logo: "https://play-lh.googleusercontent.com/QRh3SOM1KJv2S2IPWYfJH4cHBEADpgCc5sXWYI7TW4nGAFya0DFBn-TETFvWNqMWTyk", color: "bg-white-600", description: "Bill Payment Solutions" , url: "https://billpe.app/", isImage: true, isExternalImage: true},
     { name: "Pay2Back", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlDersm3uNoCFYDGNKgKDPXMN8yZgjXNe_8g&s", color: "bg-white-600", description: "Cashback & Recharge" , url: "https://pay2back.in/", isImage: true, isExternalImage: true  },
     { name: "BillHub", logo: "billhub-logo.jpg", color: "bg-white", description: "Multi-Service Platform", isImage: true, url: "https://app.billhub.in/" },

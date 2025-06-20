@@ -487,7 +487,7 @@ function App() {
               <div className="space-y-4">
                 <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-4 py-2 text-sm font-medium text-blue-800">
                   <Star className="h-4 w-4 mr-2" />
-                  RBI Authorized Payment Gateway
+                  RBI Authorized Payment Gateway Partner
                 </div>
                 <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
                   <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">

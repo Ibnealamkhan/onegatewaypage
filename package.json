@@ -4,7 +4,13 @@
   "version": "1.0.0",
   "type": "module",
   "description": "OneGateway - Mobile Recharge Payment Gateway Website",
-  "keywords": ["payment-gateway", "mobile-recharge", "fintech", "react", "vite"],
+  "keywords": [
+    "payment-gateway",
+    "mobile-recharge",
+    "fintech",
+    "react",
+    "vite"
+  ],
   "author": "OneGateway Team",
   "license": "MIT",
   "homepage": "https://onegateway.in",

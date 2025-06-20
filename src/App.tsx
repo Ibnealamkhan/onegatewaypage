@@ -184,7 +184,7 @@ function App() {
   ];
 
   const partners = [
-    { name: "Cashfree", logo: "cashfree.png", color: "bg-white", isImage: true },
+    { name: "Cashfree", logo: "https://billhub.in/assets/logo.jpg", color: "bg-white", isImage: true },
     { name: "Sabpaisa", logo: "Group-47850-3.png", color: "bg-white", isImage: true },
     { name: "Razorpay", logo: "razor_pay_icon-ICtywSbN.png", color: "bg-white", isImage: true }
   ];

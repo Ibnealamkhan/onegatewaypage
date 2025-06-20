@@ -108,7 +108,13 @@ function App() {
 
   // Initialize performance monitoring and security
   useEffect(() => {
-    // Hide loading screen
+    // Hide loading screen immediately
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      loadingScreen.style.display = 'none';
+    }
+    
+    // Add app-loaded class to body
     document.body.classList.add('app-loaded');
     
     // Initialize performance monitoring

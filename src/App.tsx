@@ -787,15 +787,15 @@ function App() {
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
                   <Phone className="h-5 w-5 text-blue-400" />
-                  <span>+91 9876543210</span>
+                  <span>+916001011509</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-5 w-5 text-blue-400" />
-                  <span>support@onegateway.com</span>
+                  <span>support@onegateway.in</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-blue-400" />
-                  <span>Mumbai, Maharashtra, India</span>
+                  <span>Dhekiajuli,Sonitpur,Assam-784110</span>
                 </div>
               </div>
             </div>

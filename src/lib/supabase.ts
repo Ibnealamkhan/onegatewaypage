@@ -20,6 +20,12 @@ export type ContactInquiry = {
   phone: string
   company?: string
   message?: string
+  ip_address?: string
+  device_type?: string
+  user_agent?: string
+  region?: string
+  city?: string
+  country?: string
   created_at?: string
   updated_at?: string
 }

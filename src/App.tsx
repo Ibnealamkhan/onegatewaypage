@@ -38,6 +38,11 @@ import {
   preloadCriticalResources,
   registerServiceWorker 
 } from './lib/performance';
+import { 
+  getUserTrackingData,
+  hasTrackingConsent,
+  type UserTrackingData 
+} from './lib/userTracking';
 import { useIntersectionObserver } from './hooks/useIntersectionObserver';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -98,6 +103,7 @@ function App() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [userTrackingData, setUserTrackingData] = useState<UserTrackingData | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -128,6 +134,11 @@ function App() {
     
     // Setup security headers
     setupSecurityHeaders();
+    
+    // Get user tracking data if consent is given
+    if (hasTrackingConsent()) {
+      getUserTrackingData().then(setUserTrackingData);
+    }
     
     // Track page view
     if (typeof window !== 'undefined' && window.gtag) {
@@ -254,12 +265,27 @@ function App() {
     setIsSubmitting(true);
 
     try {
+      // Get fresh tracking data if not available
+      let trackingData = userTrackingData;
+      if (!trackingData && hasTrackingConsent()) {
+        trackingData = await getUserTrackingData();
+      }
+
       const contactData: Omit<ContactInquiry, 'id' | 'created_at' | 'updated_at'> = {
         name: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         company: formData.company.trim() || null,
-        message: formData.message.trim() || null
+        message: formData.message.trim() || null,
+        // Add tracking data if available and consent is given
+        ...(trackingData && hasTrackingConsent() && {
+          ip_address: trackingData.ip_address || null,
+          device_type: trackingData.device_type || 'unknown',
+          user_agent: trackingData.user_agent || null,
+          region: trackingData.region || null,
+          city: trackingData.city || null,
+          country: trackingData.country || 'IN'
+        })
       };
 
       // Submit to database

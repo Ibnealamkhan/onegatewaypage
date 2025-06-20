@@ -10,6 +10,12 @@ interface ContactFormData {
   phone: string;
   company?: string;
   message?: string;
+  ip_address?: string;
+  device_type?: string;
+  user_agent?: string;
+  region?: string;
+  city?: string;
+  country?: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -32,10 +38,22 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { name, email, phone, company, message }: ContactFormData = await req.json();
+    const { 
+      name, 
+      email, 
+      phone, 
+      company, 
+      message,
+      ip_address,
+      device_type,
+      user_agent,
+      region,
+      city,
+      country
+    }: ContactFormData = await req.json();
 
-    // Format the message for Telegram
-    const telegramMessage = `
+    // Format the message for Telegram with additional tracking info
+    let telegramMessage = `
 🔔 *New Contact Form Submission*
 
 👤 *Name:* ${name}
@@ -43,6 +61,13 @@ Deno.serve(async (req: Request) => {
 📱 *Phone:* ${phone}
 ${company ? `🏢 *Company:* ${company}` : ''}
 ${message ? `💬 *Message:* ${message}` : ''}
+
+📊 *User Analytics:*
+${ip_address ? `🌐 *IP:* ${ip_address}` : ''}
+${device_type ? `📱 *Device:* ${device_type}` : ''}
+${city ? `🏙️ *City:* ${city}` : ''}
+${region ? `📍 *Region:* ${region}` : ''}
+${country ? `🇮🇳 *Country:* ${country}` : ''}
 
 ⏰ *Time:* ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
 🌐 *Source:* OneGateway Website

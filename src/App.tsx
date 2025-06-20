@@ -100,6 +100,33 @@ function App() {
     });
   };
 
+  const sendTelegramNotification = async (contactData: Omit<ContactInquiry, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/telegram-notify`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Telegram notification failed:', errorData);
+        throw new Error(`Telegram notification failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Telegram notification sent successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Error sending Telegram notification:', error);
+      // Don't throw here - we don't want to fail the form submission if Telegram fails
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -113,6 +140,7 @@ function App() {
         message: formData.message.trim() || null
       };
 
+      // Submit to database
       const { data, error } = await supabase
         .from('contact_inquiries')
         .insert([contactData])
@@ -124,6 +152,9 @@ function App() {
       }
 
       console.log('Contact inquiry submitted successfully:', data);
+      
+      // Send Telegram notification (non-blocking)
+      sendTelegramNotification(contactData);
       
       // Track successful form submission
       trackContactFormSubmission({

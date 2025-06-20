@@ -19,22 +19,17 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
     "build": "vite build",
-    "build:production": "NODE_ENV=production vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist node_modules/.vite",
-    "start": "npm run preview",
-    "serve": "serve -s dist -l 3000",
-    "deploy": "npm run build:production && npm run serve"
+    "clean": "rm -rf dist node_modules/.vite"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "serve": "^14.2.1"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
@@ -64,32 +59,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "aaPanel": {
-    "nodeVersion": "18",
-    "buildCommand": "npm run build:production",
-    "startCommand": "npm run serve",
-    "distDirectory": "dist",
-    "port": 3000,
-    "domain": "onegateway.in",
-    "ssl": true,
-    "gzip": true,
-    "cache": {
-      "static": "1y",
-      "html": "1h"
-    }
-  },
-  "deployment": {
-    "type": "static",
-    "buildDir": "dist",
-    "nodeVersion": "18.x",
-    "installCommand": "npm ci --production=false",
-    "buildCommand": "npm run build:production",
-    "startCommand": "npm run serve",
-    "healthCheck": "/",
-    "port": 3000,
-    "env": {
-      "NODE_ENV": "production"
-    }
   }
 }

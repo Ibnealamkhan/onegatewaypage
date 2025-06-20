@@ -193,7 +193,7 @@ function App() {
     { name: "PePlus", logo: "PP", color: "bg-indigo-600", description: "Mobile Recharge Platform" },
     { name: "BillPe", logo: "BP", color: "bg-rose-600", description: "Bill Payment Solutions" },
     { name: "Pay2Back", logo: "P2", color: "bg-teal-600", description: "Cashback & Recharge" },
-    { name: "BillHub", logo: "https://billhub.in/assets/logo.jpg", color: "bg-amber-600", description: "Multi-Service Platform" , isImage: true },
+    { name: "BillHub", logo: "BH", color: "bg-amber-600", description: "Multi-Service Platform" , isImage: true },
     { name: "MobiRec", logo: "MR", color: "bg-cyan-600", description: "Mobile Recharge App" }
   ];
 

@@ -195,7 +195,7 @@ function App() {
     { name: "BillPe", logo: "BP", color: "bg-rose-600", description: "Bill Payment Solutions" },
     { name: "Pay2Back", logo: "P2", color: "bg-teal-600", description: "Cashback & Recharge" },
     { name: "BillHub", logo: "billhub-logo.jpg", color: "bg-white", description: "Multi-Service Platform", isImage: true, url: "https://app.billhub.in/" },
-    { name: "Okpe", logo: "https://play-lh.googleusercontent.com/tBkY2pHRdp7a4bChtpPqjCpJTVm3VwimXV0D4hV4IH6W_8neCmM_6FrVLWxR-OCgryU", color: "bg-cyan-600", description: "Mobile Recharge App",url: "https://okpe.in/" , isImage: true}
+    { name: "Okpe", logo: "https://play-lh.googleusercontent.com/tBkY2pHRdp7a4bChtpPqjCpJTVm3VwimXV0D4hV4IH6W_8neCmM_6FrVLWxR-OCgryU", color: "bg-white", description: "Mobile Recharge App", url: "https://okpe.in/", isImage: true, isExternalImage: true }
   ];
 
   const stats = [
@@ -577,9 +577,10 @@ function App() {
                   }`}>
                     {client.isImage ? (
                       <img 
-                        src={`/${client.logo}`} 
+                        src={client.isExternalImage ? client.logo : `/${client.logo}`}
                         alt={client.name}
                         className="w-12 h-12 object-contain rounded-full"
+                        crossOrigin={client.isExternalImage ? "anonymous" : undefined}
                       />
                     ) : (
                       client.logo

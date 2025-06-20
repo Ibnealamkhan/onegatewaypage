@@ -277,18 +277,14 @@ function App() {
         phone: formData.phone.trim(),
         company: formData.company.trim() || null,
         message: formData.message.trim() || null,
-        // Add tracking data if available and consent is given
+        // Add client-side tracking data if available and consent is given
         ...(trackingData && hasTrackingConsent() && {
-          ip_address: trackingData.ip_address || null,
           device_type: trackingData.device_type || 'unknown',
           user_agent: trackingData.user_agent || null,
-          region: trackingData.region || null,
-          city: trackingData.city || null,
-          country: trackingData.country || 'IN'
         })
       };
 
-      // Submit to database
+      // Submit to database - IP address and location will be determined server-side
       const { data, error } = await supabase
         .from('contact_inquiries')
         .insert([contactData])

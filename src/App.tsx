@@ -284,10 +284,16 @@ function App() {
         })
       };
 
+      // Send to Telegram notification function first to get enhanced data
+      const telegramResult = await sendTelegramNotification(contactData);
+      
+      // Use enhanced data from Telegram function if available
+      const finalContactData = telegramResult?.enhanced_data || contactData;
+
       // Submit to database - IP address and location will be determined server-side
       const { data, error } = await supabase
         .from('contact_inquiries')
-        .insert([contactData])
+        .insert([finalContactData])
         .select();
 
       if (error) {
@@ -296,9 +302,6 @@ function App() {
       }
 
       console.log('Contact inquiry submitted successfully:', data);
-      
-      // Send Telegram notification (non-blocking)
-      sendTelegramNotification(contactData);
       
       // Track successful form submission
       trackContactFormSubmission({

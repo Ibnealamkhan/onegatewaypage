@@ -12,12 +12,17 @@ interface ContactFormData {
   message?: string;
   device_type?: string;
   user_agent?: string;
+  ip_address?: string;
+  region?: string;
+  city?: string;
+  country?: string;
 }
 
 // Function to get IP geolocation data
 async function getLocationFromIP(ip: string) {
   try {
-    const response = await fetch(`https://ipapi.co/${ip}/json/`, {
+    // Use a free IP geolocation service
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,countryCode,region,regionName,city,query`, {
       headers: {
         'User-Agent': 'OneGateway/1.0'
       }
@@ -29,11 +34,15 @@ async function getLocationFromIP(ip: string) {
     
     const data = await response.json();
     
-    return {
-      region: data.region || data.region_code || null,
-      city: data.city || null,
-      country: data.country_code || 'IN'
-    };
+    if (data.status === 'success') {
+      return {
+        region: data.regionName || data.region || null,
+        city: data.city || null,
+        country: data.countryCode || 'IN'
+      };
+    } else {
+      throw new Error('Geolocation API returned failure status');
+    }
   } catch (error) {
     console.warn('Failed to get location data:', error);
     return {
@@ -81,87 +90,73 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { 
-      name, 
-      email, 
-      phone, 
-      company, 
-      message,
-      device_type,
-      user_agent
-    }: ContactFormData = await req.json();
-
-    // Get client IP address
-    const clientIP = req.headers.get('x-forwarded-for') || 
+    const requestData: ContactFormData = await req.json();
+    
+    // Get client IP address from headers
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                     req.headers.get('x-real-ip') || 
                     req.headers.get('cf-connecting-ip') || 
+                    req.headers.get('x-client-ip') ||
                     'unknown';
 
-    // Get location data from IP
-    const locationData = await getLocationFromIP(clientIP);
+    // Get user agent from headers if not provided in request
+    const userAgent = requestData.user_agent || req.headers.get('user-agent') || '';
+
+    // Get location data from IP if not already provided
+    let locationData = {
+      region: requestData.region,
+      city: requestData.city,
+      country: requestData.country || 'IN'
+    };
+
+    if (clientIP !== 'unknown' && (!locationData.region || !locationData.city)) {
+      const geoData = await getLocationFromIP(clientIP);
+      locationData = {
+        region: locationData.region || geoData.region,
+        city: locationData.city || geoData.city,
+        country: locationData.country || geoData.country
+      };
+    }
 
     // Detect device type if not provided
-    const finalDeviceType = device_type || detectDeviceType(user_agent || '');
+    const deviceType = requestData.device_type || detectDeviceType(userAgent);
 
-    // Store the enhanced data in Supabase
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    const contactData = {
-      name,
-      email,
-      phone,
-      company: company || null,
-      message: message || null,
+    // Prepare the complete contact data
+    const enhancedContactData = {
+      ...requestData,
       ip_address: clientIP !== 'unknown' ? clientIP : null,
-      device_type: finalDeviceType,
-      user_agent: user_agent || null,
+      device_type: deviceType,
+      user_agent: userAgent || null,
       region: locationData.region,
       city: locationData.city,
       country: locationData.country
     };
 
-    // Insert into database
-    const dbResponse = await fetch(`${supabaseUrl}/rest/v1/contact_inquiries`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${supabaseServiceKey}`,
-        'Content-Type': 'application/json',
-        'apikey': supabaseServiceKey,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify(contactData)
-    });
-
-    if (!dbResponse.ok) {
-      const errorText = await dbResponse.text();
-      console.error('Database insert error:', errorText);
-      throw new Error(`Database error: ${dbResponse.status}`);
-    }
-
-    // Format the message for Telegram with additional tracking info
+    // Format the message for Telegram with all available information
     let telegramMessage = `
 🔔 *New Contact Form Submission*
 
-👤 *Name:* ${name}
-📧 *Email:* ${email}
-📱 *Phone:* ${phone}
-${company ? `🏢 *Company:* ${company}` : ''}
-${message ? `💬 *Message:* ${message}` : ''}
+👤 *Name:* ${enhancedContactData.name}
+📧 *Email:* ${enhancedContactData.email}
+📱 *Phone:* ${enhancedContactData.phone}
+${enhancedContactData.company ? `🏢 *Company:* ${enhancedContactData.company}` : ''}
+${enhancedContactData.message ? `💬 *Message:* ${enhancedContactData.message}` : ''}
 
 📊 *User Analytics:*
-${clientIP !== 'unknown' ? `🌐 *IP:* ${clientIP}` : ''}
-${finalDeviceType ? `📱 *Device:* ${finalDeviceType}` : ''}
-${locationData.city ? `🏙️ *City:* ${locationData.city}` : ''}
-${locationData.region ? `📍 *Region:* ${locationData.region}` : ''}
-${locationData.country ? `🇮🇳 *Country:* ${locationData.country}` : ''}
+${enhancedContactData.ip_address ? `🌐 *IP:* ${enhancedContactData.ip_address}` : ''}
+${enhancedContactData.device_type ? `📱 *Device:* ${enhancedContactData.device_type}` : ''}
+${enhancedContactData.city ? `🏙️ *City:* ${enhancedContactData.city}` : ''}
+${enhancedContactData.region ? `📍 *Region:* ${enhancedContactData.region}` : ''}
+${enhancedContactData.country ? `🇮🇳 *Country:* ${enhancedContactData.country}` : ''}
 
 ⏰ *Time:* ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
 🌐 *Source:* OneGateway Website
     `.trim();
 
     // Send to Telegram
-    const telegramUrl = `https://api.telegram.org/bot7769880320:AAGE_xQH2ymqMs_VqSRF1nIew0Y3hHWivp4/sendMessage`;
+    const telegramBotToken = '7769880320:AAGE_xQH2ymqMs_VqSRF1nIew0Y3hHWivp4';
+    const telegramChatId = '1090595464';
+    const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
     
     const telegramResponse = await fetch(telegramUrl, {
       method: 'POST',
@@ -169,7 +164,7 @@ ${locationData.country ? `🇮🇳 *Country:* ${locationData.country}` : ''}
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        chat_id: '1090595464',
+        chat_id: telegramChatId,
         text: telegramMessage,
         parse_mode: 'Markdown'
       }),
@@ -178,18 +173,19 @@ ${locationData.country ? `🇮🇳 *Country:* ${locationData.country}` : ''}
     if (!telegramResponse.ok) {
       const errorText = await telegramResponse.text();
       console.error('Telegram API error:', errorText);
-      throw new Error(`Telegram notification failed: ${telegramResponse.status}`);
+      throw new Error(`Telegram notification failed: ${telegramResponse.status} - ${errorText}`);
     }
 
     const telegramResult = await telegramResponse.json();
     console.log('Telegram notification sent successfully:', telegramResult);
 
+    // Return the enhanced contact data so the client can store it in the database
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Contact inquiry processed successfully',
+        message: 'Telegram notification sent successfully',
         telegram_message_id: telegramResult.message_id,
-        location_data: locationData
+        enhanced_data: enhancedContactData
       }),
       {
         status: 200,
@@ -202,7 +198,7 @@ ${locationData.country ? `🇮🇳 *Country:* ${locationData.country}` : ''}
     
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to process contact inquiry',
+        error: 'Failed to send Telegram notification',
         details: error.message 
       }),
       {

@@ -16,7 +16,8 @@ import {
   MapPin,
   Send,
   Check,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -193,7 +194,7 @@ function App() {
     { name: "PePlus", logo: "PP", color: "bg-indigo-600", description: "Mobile Recharge Platform" },
     { name: "BillPe", logo: "BP", color: "bg-rose-600", description: "Bill Payment Solutions" },
     { name: "Pay2Back", logo: "P2", color: "bg-teal-600", description: "Cashback & Recharge" },
-    { name: "BillHub", logo: "BH", color: "bg-amber-600", description: "Multi-Service Platform" , isImage: true },
+    { name: "BillHub", logo: "billhub-logo.jpg", color: "bg-white", description: "Multi-Service Platform", isImage: true, url: "https://app.billhub.in/" },
     { name: "Okpe", logo: "OP", color: "bg-cyan-600", description: "Mobile Recharge App" }
   ];
 
@@ -564,18 +565,50 @@ function App() {
           </div>
 
           <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {clients.map((client, index) => (
-              <div 
-                key={index}
-                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group hover:-translate-y-2"
-              >
-                <div className={`${client.color} w-16 h-16 rounded-full flex items-center justify-center text-white text-lg font-bold mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  {client.logo}
+            {clients.map((client, index) => {
+              const ClientCard = (
+                <div 
+                  className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group hover:-translate-y-2 ${
+                    client.url ? 'cursor-pointer' : ''
+                  }`}
+                >
+                  <div className={`${client.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 ${
+                    client.isImage ? 'border border-gray-200 overflow-hidden' : 'text-white text-lg font-bold'
+                  }`}>
+                    {client.isImage ? (
+                      <img 
+                        src={`/${client.logo}`} 
+                        alt={client.name}
+                        className="w-12 h-12 object-contain rounded-full"
+                      />
+                    ) : (
+                      client.logo
+                    )}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 flex items-center justify-center">
+                    {client.name}
+                    {client.url && <ExternalLink className="h-4 w-4 ml-2 text-gray-400" />}
+                  </h3>
+                  <p className="text-sm text-gray-600">{client.description}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">{client.name}</h3>
-                <p className="text-sm text-gray-600">{client.description}</p>
-              </div>
-            ))}
+              );
+
+              return client.url ? (
+                <a 
+                  key={index}
+                  href={client.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  {ClientCard}
+                </a>
+              ) : (
+                <div key={index}>
+                  {ClientCard}
+                </div>
+              );
+            })}
           </div>
 
           <div className="mt-12 text-center">

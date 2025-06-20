@@ -161,7 +161,7 @@ function App() {
       icon: <TrendingUp className="h-8 w-8" />,
       title: "Lowest Charges",
       description: "Only 0.10% transaction fee - the most competitive rate in the market",
-      color: "bg-emerald-500"
+      color: "bg-emerald-500" 
     },
     {
       icon: <Clock className="h-8 w-8" />,
@@ -184,7 +184,7 @@ function App() {
   ];
 
   const partners = [
-    { name: "Cashfree", logo: "https://billhub.in/assets/logo.jpg", color: "bg-white", isImage: true },
+    { name: "Cashfree", logo: "cashfree.png", color: "bg-white", isImage: true },
     { name: "Sabpaisa", logo: "Group-47850-3.png", color: "bg-white", isImage: true },
     { name: "Razorpay", logo: "razor_pay_icon-ICtywSbN.png", color: "bg-white", isImage: true }
   ];

@@ -379,7 +379,7 @@ function App() {
     },
     { 
       name: "PhonePe", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/PhonePe_logo.svg/512px-PhonePe_logo.svg.png", 
+      logo: "https://eu-images.contentstack.com/v3/assets/blt7dacf616844cf077/blt85b08b4917701bc0/67997d68d8a86f00203713cc/phonepe-logo-icon.jpg?width=700&auto=webp&quality=80&disable=upscale", 
       color: "bg-white",
       description: "Secure Digital Payments"
     },

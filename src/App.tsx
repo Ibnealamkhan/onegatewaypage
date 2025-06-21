@@ -18,7 +18,7 @@ import {
   Check,
   Sparkles,
   ExternalLink,
-  CreditCard
+  PlayCircle
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -102,6 +102,7 @@ function App() {
   const [scrollY, setScrollY] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [userTrackingData, setUserTrackingData] = useState<UserTrackingData | null>(null);
@@ -159,7 +160,7 @@ function App() {
   // Track section views on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features', 'clients', 'pricing', 'partners', 'upi-methods'];
+      const sections = ['features', 'clients', 'pricing', 'partners'];
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -337,6 +338,12 @@ function App() {
     setShowContactForm(true);
   };
 
+  const handleDemoClick = () => {
+    trackButtonClick('View Demo', 'hero');
+    trackModalOpen('Demo Modal');
+    setShowDemoModal(true);
+  };
+
   const features = [
     {
       icon: <TrendingUp className="h-8 w-8" />,
@@ -370,45 +377,6 @@ function App() {
     { name: "Razorpay", logo: "razor_pay_icon-ICtywSbN.png", color: "bg-white", isImage: true }
   ];
 
-  const upiMethods = [
-    { 
-      name: "Google Pay", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Pay_Logo_%282020%29.svg/512px-Google_Pay_Logo_%282020%29.svg.png", 
-      color: "bg-white",
-      description: "Instant UPI Payments"
-    },
-    { 
-      name: "PhonePe", 
-      logo: "https://eu-images.contentstack.com/v3/assets/blt7dacf616844cf077/blt85b08b4917701bc0/67997d68d8a86f00203713cc/phonepe-logo-icon.jpg?width=700&auto=webp&quality=80&disable=upscale", 
-      color: "bg-white",
-      description: "Secure Digital Payments"
-    },
-    { 
-      name: "Paytm", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Paytm_Logo_%28standalone%29.svg/512px-Paytm_Logo_%28standalone%29.svg.png", 
-      color: "bg-white",
-      description: "Digital Wallet & UPI"
-    },
-    {  
-      name: "Amazon Pay", 
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAklrSOkl-R4_d-ajBtE5eYfuioDTM6cNFSg&s", 
-      color: "bg-white",
-      description: "Amazon UPI Service"
-    },
-    { 
-      name: "BHIM UPI", 
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStoYRKc5vrYVlgb9YDYpQIrLp9FYAD0AIyKetVIgs4ZOYeSpyjKiYhONPz8IgzRXG8Mo0&usqp=CAU", 
-      color: "bg-white",
-      description: "Government UPI App"
-    },
-    { 
-      name: "WhatsApp Pay", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/WhatsApp_icon.png/512px-WhatsApp_icon.png", 
-      color: "bg-white",
-      description: "WhatsApp Payments"
-    }
-  ];
-
   const clients = [
     { name: "PePlus", logo: "https://play-lh.googleusercontent.com/1YDx0xZBLl4-my6klDo_Y-idM4HW4IHgnQkiijiUE-oblAZ4BN_a_93PAmqpEQs4QQoB=w240-h480-rw", color: "bg-white-600", description: "Mobile Recharge Platform" , url: "https://peplus.in/", isImage: true, isExternalImage: true},
     { name: "BillPe", logo: "https://play-lh.googleusercontent.com/QRh3SOM1KJv2S2IPWYfJH4cHBEADpgCc5sXWYI7TW4nGAFya0DFBn-TETFvWNqMWTyk", color: "bg-white-600", description: "Bill Payment Solutions" , url: "https://billpe.app/", isImage: true, isExternalImage: true},
@@ -427,6 +395,122 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-white">
+        {/* Demo Modal */}
+        {showDemoModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">OneGateway Payment Demo</h3>
+                <button 
+                  onClick={() => setShowDemoModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Close demo modal"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-4 py-2 text-sm font-medium text-blue-800 mb-4">
+                  <PlayCircle className="h-4 w-4 mr-2" />
+                  Live Payment Interface
+                </div>
+                <p className="text-gray-600 mb-6">
+                  See how OneGateway seamlessly integrates with your mobile recharge application. 
+                  This is a real payment interface powered by our gateway.
+                </p>
+              </div>
+
+              {/* Mobile Demo Screenshot */}
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  <img 
+                    src="/output.png" 
+                    alt="OneGateway Mobile Payment Interface Demo"
+                    className="max-w-full h-auto rounded-2xl shadow-2xl"
+                    style={{ maxHeight: '600px' }}
+                  />
+                  <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-2">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Demo Features */}
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="bg-blue-500 rounded-full p-2">
+                      <Smartphone className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-blue-800">Mobile Optimized</span>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    Responsive design that works perfectly on all mobile devices
+                  </p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="bg-green-500 rounded-full p-2">
+                      <Shield className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-green-800">Secure Payments</span>
+                  </div>
+                  <p className="text-sm text-green-700">
+                    Bank-grade security with multiple UPI payment options
+                  </p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="bg-orange-500 rounded-full p-2">
+                      <Zap className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-orange-800">Instant Processing</span>
+                  </div>
+                  <p className="text-sm text-orange-700">
+                    Real-time transaction processing with immediate confirmation
+                  </p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="bg-purple-500 rounded-full p-2">
+                      <Star className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-purple-800">User Friendly</span>
+                  </div>
+                  <p className="text-sm text-purple-700">
+                    Intuitive interface with seamless user experience
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => {
+                    setShowDemoModal(false);
+                    handleContactButtonClick('demo-modal');
+                  }}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
+                >
+                  <Send className="h-5 w-5 mr-2" />
+                  Get Started Now
+                </button>
+                <button
+                  onClick={() => setShowDemoModal(false)}
+                  className="flex-1 border-2 border-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
+                >
+                  <X className="h-5 w-5 mr-2" />
+                  Close Demo
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Success Popup Modal */}
         {showSuccessPopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -647,7 +731,6 @@ function App() {
                 <a href="#clients" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Clients</a>
                 <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Pricing</a>
                 <a href="#partners" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Partners</a>
-                <a href="#upi-methods" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">UPI</a>
                 <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Contact</a>
                 <button 
                   onClick={() => handleContactButtonClick('navigation')}
@@ -676,7 +759,6 @@ function App() {
                 <a href="#clients" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Clients</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
                 <a href="#partners" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Partners</a>
-                <a href="#upi-methods" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">UPI</a>
                 <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
                 <button 
                   onClick={() => handleContactButtonClick('mobile-menu')}
@@ -720,6 +802,13 @@ function App() {
                   >
                     Contact Us
                     <ArrowRight className="ml-2 h-5 w-5" />
+                  </button>
+                  <button 
+                    onClick={handleDemoClick}
+                    className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 flex items-center justify-center"
+                  >
+                    <PlayCircle className="mr-2 h-5 w-5" />
+                    View Demo
                   </button>
                 </div>
 
@@ -790,73 +879,6 @@ function App() {
                 </AnimatedSection>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* UPI Payment Methods Section */}
-        <section id="upi-methods" className="py-20 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AnimatedSection className="text-center mb-16">
-              <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full px-4 py-2 text-sm font-medium text-purple-800 mb-4">
-                <CreditCard className="h-4 w-4 mr-2" />
-                UPI Payment Methods
-              </div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                All Popular UPI Apps Supported
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Accept payments from all major UPI applications with seamless integration and instant settlement
-              </p>
-            </AnimatedSection>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {upiMethods.map((method, index) => (
-                <AnimatedSection 
-                  key={index}
-                  className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center border border-gray-100 hover:border-purple-200 hover:-translate-y-2"
-                >
-                  <div className={`${method.color} w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 border border-gray-200 overflow-hidden`}>
-                    <img 
-                      src={method.logo}
-                      alt={method.name}
-                      className="w-12 h-12 object-contain"
-                      loading="lazy"
-                      crossOrigin="anonymous"
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{method.name}</h3>
-                  <p className="text-sm text-gray-600">{method.description}</p>
-                </AnimatedSection>
-              ))}
-            </div>
-
-            <AnimatedSection className="text-center">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white">
-                <div className="max-w-3xl mx-auto">
-                  <h3 className="text-2xl font-bold mb-4">Universal UPI Compatibility</h3>
-                  <p className="text-lg text-purple-100 mb-6">
-                    Our payment gateway supports all UPI-enabled applications, ensuring your customers can pay using their preferred method
-                  </p>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div className="bg-white/10 rounded-lg p-4">
-                      <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                      <div className="font-semibold">Instant Verification</div>
-                      <div className="text-sm text-purple-200">Real-time payment confirmation</div>
-                    </div>
-                    <div className="bg-white/10 rounded-lg p-4">
-                      <Shield className="h-6 w-6 mx-auto mb-2" />
-                      <div className="font-semibold">Bank-Grade Security</div>
-                      <div className="text-sm text-purple-200">End-to-end encryption</div>
-                    </div>
-                    <div className="bg-white/10 rounded-lg p-4">
-                      <Zap className="h-6 w-6 mx-auto mb-2" />
-                      <div className="font-semibold">Lightning Fast</div>
-                      <div className="text-sm text-purple-200">Sub-second processing</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </AnimatedSection>
           </div>
         </section>
 

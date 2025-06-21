@@ -397,7 +397,7 @@ function App() {
     },
     { 
       name: "BHIM UPI", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/BHIM_logo.svg/512px-BHIM_logo.svg.png", 
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStoYRKc5vrYVlgb9YDYpQIrLp9FYAD0AIyKetVIgs4ZOYeSpyjKiYhONPz8IgzRXG8Mo0&usqp=CAU", 
       color: "bg-white",
       description: "Government UPI App"
     },

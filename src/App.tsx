@@ -17,7 +17,8 @@ import {
   Send,
   Check,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  CreditCard
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -158,7 +159,7 @@ function App() {
   // Track section views on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features', 'clients', 'pricing', 'partners'];
+      const sections = ['features', 'clients', 'upi-apps', 'pricing', 'partners'];
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -375,6 +376,73 @@ function App() {
     { name: "Pay2Back", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlDersm3uNoCFYDGNKgKDPXMN8yZgjXNe_8g&s", color: "bg-white-600", description: "Cashback & Recharge" , url: "https://pay2back.in/", isImage: true, isExternalImage: true  },
     { name: "BillHub", logo: "billhub-logo.jpg", color: "bg-white", description: "Multi-Service Platform", isImage: true, url: "https://app.billhub.in/" },
     { name: "Okpe", logo: "https://play-lh.googleusercontent.com/tBkY2pHRdp7a4bChtpPqjCpJTVm3VwimXV0D4hV4IH6W_8neCmM_6FrVLWxR-OCgryU", color: "bg-white", description: "Mobile Recharge App", url: "https://okpe.in/", isImage: true, isExternalImage: true }
+  ];
+
+  const upiApps = [
+    {
+      name: "PhonePe",
+      logo: "https://logos-world.net/wp-content/uploads/2023/02/PhonePe-Logo.png",
+      color: "bg-purple-600",
+      description: "India's leading UPI app",
+      users: "450M+",
+      isExternalImage: true
+    },
+    {
+      name: "Google Pay",
+      logo: "https://developers.google.com/static/pay/images/logos/google-pay-mark_800.png",
+      color: "bg-blue-600",
+      description: "Simple & secure payments",
+      users: "150M+",
+      isExternalImage: true
+    },
+    {
+      name: "Paytm",
+      logo: "https://logos-world.net/wp-content/uploads/2020/11/Paytm-Logo.png",
+      color: "bg-blue-500",
+      description: "Digital payments pioneer",
+      users: "350M+",
+      isExternalImage: true
+    },
+    {
+      name: "Amazon Pay",
+      logo: "https://m.media-amazon.com/images/G/31/amazonpay/shopwithpoints/SWP_Logo_800x450._CB485942472_.png",
+      color: "bg-orange-500",
+      description: "Shop & pay seamlessly",
+      users: "50M+",
+      isExternalImage: true
+    },
+    {
+      name: "BHIM UPI",
+      logo: "https://www.bhimupi.org.in/images/bhim-upi-logo.png",
+      color: "bg-green-600",
+      description: "Government's UPI app",
+      users: "100M+",
+      isExternalImage: true
+    },
+    {
+      name: "Freecharge",
+      logo: "https://logos-world.net/wp-content/uploads/2021/02/Freecharge-Logo.png",
+      color: "bg-yellow-500",
+      description: "Recharge & bill payments",
+      users: "75M+",
+      isExternalImage: true
+    },
+    {
+      name: "MobiKwik",
+      logo: "https://logos-world.net/wp-content/uploads/2021/02/MobiKwik-Logo.png",
+      color: "bg-red-500",
+      description: "Digital wallet & UPI",
+      users: "120M+",
+      isExternalImage: true
+    },
+    {
+      name: "WhatsApp Pay",
+      logo: "https://scontent.whatsapp.net/v/t39.8562-34/122095451_338186477608319_8988834335637225536_n.png?ccb=1-7&_nc_sid=57045c&_nc_ohc=Q4J6BsqEvw0Q7kNvgGvTfhL&_nc_ht=scontent.whatsapp.net&oh=00_AYCvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjvjvQjv&oe=6791F5E8",
+      color: "bg-green-500",
+      description: "Chat & pay instantly",
+      users: "500M+",
+      isExternalImage: true
+    }
   ];
 
   const stats = [
@@ -605,6 +673,7 @@ function App() {
               <div className="hidden md:flex items-center space-x-8">
                 <a href="#features" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Features</a>
                 <a href="#clients" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Clients</a>
+                <a href="#upi-apps" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">UPI Apps</a>
                 <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Pricing</a>
                 <a href="#partners" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Partners</a>
                 <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Contact</a>
@@ -633,6 +702,7 @@ function App() {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Features</a>
                 <a href="#clients" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Clients</a>
+                <a href="#upi-apps" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">UPI Apps</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
                 <a href="#partners" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Partners</a>
                 <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
@@ -821,8 +891,90 @@ function App() {
           </div>
         </section>
 
+        {/* UPI Apps Section */}
+        <section id="upi-apps" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection className="text-center mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Compatible UPI Applications
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Our payment gateway seamlessly integrates with all major UPI apps, giving your customers the freedom to pay with their preferred application
+              </p>
+            </AnimatedSection>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {upiApps.map((app, index) => (
+                <AnimatedSection 
+                  key={index}
+                  className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
+                >
+                  <div className="relative mb-4">
+                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 border border-gray-200 overflow-hidden bg-white`}>
+                      <img 
+                        src={app.logo}
+                        alt={app.name}
+                        className="w-12 h-12 object-contain"
+                        crossOrigin={app.isExternalImage ? "anonymous" : undefined}
+                        loading="lazy"
+                        onError={(e) => {
+                          // Fallback to a colored div with app initial if image fails
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const fallback = document.createElement('div');
+                          fallback.className = `w-12 h-12 ${app.color} rounded-lg flex items-center justify-center text-white font-bold text-lg`;
+                          fallback.textContent = app.name.charAt(0);
+                          target.parentNode?.appendChild(fallback);
+                        }}
+                      />
+                    </div>
+                    <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-1">
+                      <CheckCircle className="h-3 w-3" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{app.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{app.description}</p>
+                  
+                  <div className="flex items-center justify-center space-x-2">
+                    <Users className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm font-medium text-blue-600">{app.users} users</span>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+
+            <AnimatedSection className="mt-12 text-center">
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 max-w-4xl mx-auto">
+                <div className="flex items-center justify-center mb-4">
+                  <CreditCard className="h-8 w-8 text-blue-600 mr-3" />
+                  <h3 className="text-2xl font-bold text-gray-900">Universal UPI Compatibility</h3>
+                </div>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Our payment gateway supports all UPI-enabled applications, ensuring your customers can pay using any app they prefer. 
+                  From popular choices like PhonePe and Google Pay to emerging platforms, we've got you covered.
+                </p>
+                <div className="grid md:grid-cols-3 gap-4 text-sm">
+                  <div className="flex items-center justify-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Instant QR Code Generation</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Real-time Payment Status</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>99.9% Success Rate</span>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
+        </section>
+
         {/* Partners Section */}
-        <section id="partners" className="py-20 bg-white">
+        <section id="partners" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -867,7 +1019,7 @@ function App() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="py-20 bg-gray-50">
+        <section id="pricing" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">

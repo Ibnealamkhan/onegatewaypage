@@ -389,7 +389,7 @@ function App() {
       color: "bg-white",
       description: "Digital Wallet & UPI"
     },
-    { 
+    {  
       name: "Amazon Pay", 
       logo: "https://images.seeklogo.com/logo-png/42/1/amazon-pay-logo-png_seeklogo-425648.png", 
       color: "bg-white",

@@ -17,8 +17,7 @@ import {
   Send,
   Check,
   Sparkles,
-  ExternalLink,
-  PlayCircle
+  ExternalLink
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -102,7 +101,6 @@ function App() {
   const [scrollY, setScrollY] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [showDemoModal, setShowDemoModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [userTrackingData, setUserTrackingData] = useState<UserTrackingData | null>(null);
@@ -338,12 +336,6 @@ function App() {
     setShowContactForm(true);
   };
 
-  const handleDemoClick = () => {
-    trackButtonClick('View Demo', 'hero');
-    trackModalOpen('Demo Modal');
-    setShowDemoModal(true);
-  };
-
   const features = [
     {
       icon: <TrendingUp className="h-8 w-8" />,
@@ -395,122 +387,6 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-white">
-        {/* Demo Modal */}
-        {showDemoModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900">OneGateway Payment Demo</h3>
-                <button 
-                  onClick={() => setShowDemoModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                  aria-label="Close demo modal"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-4 py-2 text-sm font-medium text-blue-800 mb-4">
-                  <PlayCircle className="h-4 w-4 mr-2" />
-                  Live Payment Interface
-                </div>
-                <p className="text-gray-600 mb-6">
-                  See how OneGateway seamlessly integrates with your mobile recharge application. 
-                  This is a real payment interface powered by our gateway.
-                </p>
-              </div>
-
-              {/* Mobile Demo Screenshot */}
-              <div className="flex justify-center mb-6">
-                <div className="relative">
-                  <img 
-                    src="/output.png" 
-                    alt="OneGateway Mobile Payment Interface Demo"
-                    className="max-w-full h-auto rounded-2xl shadow-2xl"
-                    style={{ maxHeight: '600px' }}
-                  />
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-2">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Demo Features */}
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="bg-blue-500 rounded-full p-2">
-                      <Smartphone className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="font-semibold text-blue-800">Mobile Optimized</span>
-                  </div>
-                  <p className="text-sm text-blue-700">
-                    Responsive design that works perfectly on all mobile devices
-                  </p>
-                </div>
-                
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="bg-green-500 rounded-full p-2">
-                      <Shield className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="font-semibold text-green-800">Secure Payments</span>
-                  </div>
-                  <p className="text-sm text-green-700">
-                    Bank-grade security with multiple UPI payment options
-                  </p>
-                </div>
-                
-                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="bg-orange-500 rounded-full p-2">
-                      <Zap className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="font-semibold text-orange-800">Instant Processing</span>
-                  </div>
-                  <p className="text-sm text-orange-700">
-                    Real-time transaction processing with immediate confirmation
-                  </p>
-                </div>
-                
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="bg-purple-500 rounded-full p-2">
-                      <Star className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="font-semibold text-purple-800">User Friendly</span>
-                  </div>
-                  <p className="text-sm text-purple-700">
-                    Intuitive interface with seamless user experience
-                  </p>
-                </div>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => {
-                    setShowDemoModal(false);
-                    handleContactButtonClick('demo-modal');
-                  }}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
-                >
-                  <Send className="h-5 w-5 mr-2" />
-                  Get Started Now
-                </button>
-                <button
-                  onClick={() => setShowDemoModal(false)}
-                  className="flex-1 border-2 border-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 flex items-center justify-center"
-                >
-                  <X className="h-5 w-5 mr-2" />
-                  Close Demo
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Success Popup Modal */}
         {showSuccessPopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -802,13 +678,6 @@ function App() {
                   >
                     Contact Us
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </button>
-                  <button 
-                    onClick={handleDemoClick}
-                    className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-all duration-200 flex items-center justify-center"
-                  >
-                    <PlayCircle className="mr-2 h-5 w-5" />
-                    View Demo
                   </button>
                 </div>
 

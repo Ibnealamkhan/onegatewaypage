@@ -17,7 +17,8 @@ import {
   Send,
   Check,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  CreditCard
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -158,7 +159,7 @@ function App() {
   // Track section views on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features', 'clients', 'pricing', 'partners'];
+      const sections = ['features', 'clients', 'pricing', 'partners', 'upi-methods'];
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -367,6 +368,45 @@ function App() {
     { name: "Cashfree", logo: "cashfree.png", color: "bg-white", isImage: true },
     { name: "Sabpaisa", logo: "Group-47850-3.png", color: "bg-white", isImage: true },
     { name: "Razorpay", logo: "razor_pay_icon-ICtywSbN.png", color: "bg-white", isImage: true }
+  ];
+
+  const upiMethods = [
+    { 
+      name: "Google Pay", 
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Pay_Logo_%282020%29.svg/512px-Google_Pay_Logo_%282020%29.svg.png", 
+      color: "bg-white",
+      description: "Instant UPI Payments"
+    },
+    { 
+      name: "PhonePe", 
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/PhonePe_logo.svg/512px-PhonePe_logo.svg.png", 
+      color: "bg-white",
+      description: "Secure Digital Payments"
+    },
+    { 
+      name: "Paytm", 
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Paytm_Logo_%28standalone%29.svg/512px-Paytm_Logo_%28standalone%29.svg.png", 
+      color: "bg-white",
+      description: "Digital Wallet & UPI"
+    },
+    { 
+      name: "Amazon Pay", 
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Amazon_Pay_logo.svg/512px-Amazon_Pay_logo.svg.png", 
+      color: "bg-white",
+      description: "Amazon UPI Service"
+    },
+    { 
+      name: "BHIM UPI", 
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/BHIM_logo.svg/512px-BHIM_logo.svg.png", 
+      color: "bg-white",
+      description: "Government UPI App"
+    },
+    { 
+      name: "WhatsApp Pay", 
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/WhatsApp_icon.png/512px-WhatsApp_icon.png", 
+      color: "bg-white",
+      description: "WhatsApp Payments"
+    }
   ];
 
   const clients = [
@@ -607,6 +647,7 @@ function App() {
                 <a href="#clients" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Clients</a>
                 <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Pricing</a>
                 <a href="#partners" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Partners</a>
+                <a href="#upi-methods" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">UPI</a>
                 <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Contact</a>
                 <button 
                   onClick={() => handleContactButtonClick('navigation')}
@@ -635,6 +676,7 @@ function App() {
                 <a href="#clients" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Clients</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
                 <a href="#partners" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Partners</a>
+                <a href="#upi-methods" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">UPI</a>
                 <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
                 <button 
                   onClick={() => handleContactButtonClick('mobile-menu')}
@@ -748,6 +790,73 @@ function App() {
                 </AnimatedSection>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* UPI Payment Methods Section */}
+        <section id="upi-methods" className="py-20 bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AnimatedSection className="text-center mb-16">
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full px-4 py-2 text-sm font-medium text-purple-800 mb-4">
+                <CreditCard className="h-4 w-4 mr-2" />
+                UPI Payment Methods
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                All Popular UPI Apps Supported
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Accept payments from all major UPI applications with seamless integration and instant settlement
+              </p>
+            </AnimatedSection>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {upiMethods.map((method, index) => (
+                <AnimatedSection 
+                  key={index}
+                  className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center border border-gray-100 hover:border-purple-200 hover:-translate-y-2"
+                >
+                  <div className={`${method.color} w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 border border-gray-200 overflow-hidden`}>
+                    <img 
+                      src={method.logo}
+                      alt={method.name}
+                      className="w-12 h-12 object-contain"
+                      loading="lazy"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{method.name}</h3>
+                  <p className="text-sm text-gray-600">{method.description}</p>
+                </AnimatedSection>
+              ))}
+            </div>
+
+            <AnimatedSection className="text-center">
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white">
+                <div className="max-w-3xl mx-auto">
+                  <h3 className="text-2xl font-bold mb-4">Universal UPI Compatibility</h3>
+                  <p className="text-lg text-purple-100 mb-6">
+                    Our payment gateway supports all UPI-enabled applications, ensuring your customers can pay using their preferred method
+                  </p>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div className="bg-white/10 rounded-lg p-4">
+                      <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                      <div className="font-semibold">Instant Verification</div>
+                      <div className="text-sm text-purple-200">Real-time payment confirmation</div>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-4">
+                      <Shield className="h-6 w-6 mx-auto mb-2" />
+                      <div className="font-semibold">Bank-Grade Security</div>
+                      <div className="text-sm text-purple-200">End-to-end encryption</div>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-4">
+                      <Zap className="h-6 w-6 mx-auto mb-2" />
+                      <div className="font-semibold">Lightning Fast</div>
+                      <div className="text-sm text-purple-200">Sub-second processing</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
           </div>
         </section>
 

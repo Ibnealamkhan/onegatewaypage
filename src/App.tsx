@@ -391,7 +391,7 @@ function App() {
     },
     {  
       name: "Amazon Pay", 
-      logo: "https://www.shutterstock.com/image-vector/amazon-pay-logo-biggest-online-600nw-2360491029.jpg", 
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAklrSOkl-R4_d-ajBtE5eYfuioDTM6cNFSg&s", 
       color: "bg-white",
       description: "Amazon UPI Service"
     },

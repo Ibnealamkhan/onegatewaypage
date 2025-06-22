@@ -1,0 +1,13 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bhim-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="40" fill="url(#bhim-gradient)"/>
+  <text x="100" y="110" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">BHIM</text>
+  <text x="100" y="130" font-family="Arial, sans-serif" font-size="14" font-weight="normal" text-anchor="middle" fill="white">UPI</text>
+  <rect x="70" y="50" width="60" height="30" rx="5" fill="white" opacity="0.9"/>
+  <text x="100" y="70" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#16a34a">₹</text>
+</svg>

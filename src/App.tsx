@@ -18,7 +18,8 @@ import {
   Check,
   Sparkles,
   ExternalLink,
-  CreditCard
+  CreditCard,
+  Wallet
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -381,67 +382,67 @@ function App() {
   const upiApps = [
     {
       name: "PhonePe",
-      logo: "https://logos-world.net/wp-content/uploads/2023/02/PhonePe-Logo.png",
+      logo: "phonepe-logo.svg",
+      users: "450M+",
       color: "bg-purple-600",
       description: "India's leading UPI app",
-      users: "450M+",
-      isExternalImage: true
+      isLocal: true
     },
     {
       name: "Google Pay",
-      logo: "https://developers.google.com/static/pay/images/logos/google-pay-mark_800.png",
-      color: "bg-blue-600",
-      description: "Simple & secure payments",
+      logo: "googlepay-logo.svg",
       users: "150M+",
-      isExternalImage: true
+      color: "bg-blue-600",
+      description: "Google's payment solution",
+      isLocal: true
     },
     {
       name: "Paytm",
-      logo: "https://logos-world.net/wp-content/uploads/2020/11/Paytm-Logo.png",
+      logo: "paytm-logo.svg",
+      users: "350M+",
       color: "bg-blue-500",
       description: "Digital payments pioneer",
-      users: "350M+",
-      isExternalImage: true
+      isLocal: true
     },
     {
       name: "Amazon Pay",
-      logo: "https://m.media-amazon.com/images/G/31/amazonpay/shopwithpoints/SWP_Logo_800x450._CB485942472_.png",
-      color: "bg-orange-500",
-      description: "Shop & pay seamlessly",
+      logo: "amazonpay-logo.svg",
       users: "50M+",
-      isExternalImage: true
+      color: "bg-orange-500",
+      description: "Amazon's payment service",
+      isLocal: true
     },
     {
       name: "BHIM UPI",
-      logo: "https://www.bhimupi.org.in/images/bhim-upi-logo.png",
+      logo: "bhim-logo.svg",
+      users: "100M+",
       color: "bg-green-600",
       description: "Government's UPI app",
-      users: "100M+",
-      isExternalImage: true
+      isLocal: true
     },
     {
       name: "Freecharge",
-      logo: "https://logos-world.net/wp-content/uploads/2021/02/Freecharge-Logo.png",
+      logo: "freecharge-logo.svg",
+      users: "50M+",
       color: "bg-yellow-500",
-      description: "Recharge & bill payments",
-      users: "75M+",
-      isExternalImage: true
+      description: "Mobile recharge & bills",
+      isLocal: true
     },
     {
       name: "MobiKwik",
-      logo: "https://logos-world.net/wp-content/uploads/2021/02/MobiKwik-Logo.png",
+      logo: "mobikwik-logo.svg",
+      users: "120M+",
       color: "bg-red-500",
       description: "Digital wallet & UPI",
-      users: "120M+",
-      isExternalImage: true
+      isLocal: true
     },
     {
       name: "WhatsApp Pay",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png",
+      logo: "whatsapp-logo.svg",
+      users: "100M+",
       color: "bg-green-500",
-      description: "Chat & pay instantly",
-      users: "500M+",
-      isExternalImage: true
+      description: "WhatsApp integrated payments",
+      isLocal: true
     }
   ];
 
@@ -896,76 +897,67 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Compatible UPI Applications
+                Compatible with All UPI Apps
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Our payment gateway seamlessly integrates with all major UPI apps, giving your customers the freedom to pay with their preferred application
+                Our payment gateway seamlessly integrates with all major UPI applications, ensuring maximum reach for your customers
               </p>
             </AnimatedSection>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 mb-12">
               {upiApps.map((app, index) => (
                 <AnimatedSection 
                   key={index}
-                  className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
+                  className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 text-center border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
                 >
-                  <div className="relative mb-4">
-                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 border border-gray-200 overflow-hidden bg-white`}>
-                      <img 
-                        src={app.logo}
-                        alt={app.name}
-                        className="w-12 h-12 object-contain"
-                        crossOrigin={app.isExternalImage ? "anonymous" : undefined}
-                        loading="lazy"
-                        onError={(e) => {
-                          // Fallback to a colored div with app initial if image fails
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const fallback = document.createElement('div');
-                          fallback.className = `w-12 h-12 ${app.color} rounded-lg flex items-center justify-center text-white font-bold text-lg`;
-                          fallback.textContent = app.name.charAt(0);
-                          target.parentNode?.appendChild(fallback);
-                        }}
-                      />
-                    </div>
-                    <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-1">
-                      <CheckCircle className="h-3 w-3" />
-                    </div>
+                  <div className="w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <img 
+                      src={app.isLocal ? `/${app.logo}` : app.logo}
+                      alt={`${app.name} logo`}
+                      className="w-full h-full object-contain rounded-lg"
+                      loading="lazy"
+                    />
                   </div>
-                  
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{app.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3">{app.description}</p>
-                  
-                  <div className="flex items-center justify-center space-x-2">
-                    <Users className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm font-medium text-blue-600">{app.users} users</span>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{app.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{app.description}</p>
+                  <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-3 py-1">
+                    <Users className="h-4 w-4 text-blue-600 mr-1" />
+                    <span className="text-xs font-medium text-blue-800">{app.users} users</span>
                   </div>
                 </AnimatedSection>
               ))}
             </div>
 
-            <AnimatedSection className="mt-12 text-center">
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 max-w-4xl mx-auto">
+            <AnimatedSection className="text-center">
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8">
                 <div className="flex items-center justify-center mb-4">
-                  <CreditCard className="h-8 w-8 text-blue-600 mr-3" />
-                  <h3 className="text-2xl font-bold text-gray-900">Universal UPI Compatibility</h3>
+                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full p-3">
+                    <Wallet className="h-8 w-8 text-white" />
+                  </div>
                 </div>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Our payment gateway supports all UPI-enabled applications, ensuring your customers can pay using any app they prefer. 
-                  From popular choices like PhonePe and Google Pay to emerging platforms, we've got you covered.
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Universal UPI Compatibility
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                  Your customers can pay using any UPI app of their choice. Our gateway supports all major UPI applications, 
+                  providing flexibility and convenience for seamless transactions.
                 </p>
-                <div className="grid md:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center justify-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Instant QR Code Generation</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-blue-600">8+</div>
+                    <div className="text-sm text-gray-600">UPI Apps</div>
                   </div>
-                  <div className="flex items-center justify-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Real-time Payment Status</span>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-green-600">1B+</div>
+                    <div className="text-sm text-gray-600">Total Users</div>
                   </div>
-                  <div className="flex items-center justify-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>99.9% Success Rate</span>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-purple-600">24/7</div>
+                    <div className="text-sm text-gray-600">Availability</div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-2xl font-bold text-orange-600">100%</div>
+                    <div className="text-sm text-gray-600">Compatible</div>
                   </div>
                 </div>
               </div>

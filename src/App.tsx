@@ -19,7 +19,7 @@ import {
   Sparkles,
   ExternalLink,
   CreditCard,
-  Wallet
+  Banknote
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
@@ -160,7 +160,7 @@ function App() {
   // Track section views on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features', 'clients', 'upi-apps', 'pricing', 'partners'];
+      const sections = ['features', 'clients', 'pricing', 'partners', 'upi-apps'];
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -380,69 +380,61 @@ function App() {
   ];
 
   const upiApps = [
-    {
-      name: "PhonePe",
-      logo: "phonepe-logo.svg",
-      users: "450M+",
+    { 
+      name: "PhonePe", 
+      logo: "phonepe-logo.svg", 
+      users: "450M+", 
       color: "bg-purple-600",
-      description: "India's leading UPI app",
-      isLocal: true
+      description: "India's leading UPI app"
     },
-    {
-      name: "Google Pay",
-      logo: "googlepay-logo.svg",
-      users: "150M+",
+    { 
+      name: "Google Pay", 
+      logo: "googlepay-logo.svg", 
+      users: "150M+", 
       color: "bg-blue-600",
-      description: "Google's payment solution",
-      isLocal: true
+      description: "Google's payment solution"
     },
-    {
-      name: "Paytm",
-      logo: "paytm-logo.svg",
-      users: "350M+",
+    { 
+      name: "Paytm", 
+      logo: "paytm-logo.svg", 
+      users: "350M+", 
       color: "bg-blue-500",
-      description: "Digital payments pioneer",
-      isLocal: true
+      description: "Digital payments pioneer"
     },
-    {
-      name: "Amazon Pay",
-      logo: "amazonpay-logo.svg",
-      users: "50M+",
+    { 
+      name: "Amazon Pay", 
+      logo: "amazonpay-logo.svg", 
+      users: "50M+", 
       color: "bg-orange-500",
-      description: "Amazon's payment service",
-      isLocal: true
+      description: "Amazon's payment service"
     },
-    {
-      name: "BHIM UPI",
-      logo: "bhim-logo.svg",
-      users: "100M+",
+    { 
+      name: "BHIM UPI", 
+      logo: "bhim-logo.svg", 
+      users: "40M+", 
       color: "bg-green-600",
-      description: "Government's UPI app",
-      isLocal: true
+      description: "Government's UPI app"
     },
-    {
-      name: "Freecharge",
-      logo: "freecharge-logo.svg",
-      users: "50M+",
+    { 
+      name: "Freecharge", 
+      logo: "freecharge-logo.svg", 
+      users: "30M+", 
       color: "bg-yellow-500",
-      description: "Mobile recharge & bills",
-      isLocal: true
+      description: "Recharge & bill payments"
     },
-    {
-      name: "MobiKwik",
-      logo: "mobikwik-logo.svg",
-      users: "120M+",
+    { 
+      name: "MobiKwik", 
+      logo: "mobikwik-logo.svg", 
+      users: "120M+", 
       color: "bg-red-500",
-      description: "Digital wallet & UPI",
-      isLocal: true
+      description: "Digital wallet & UPI"
     },
-    {
-      name: "WhatsApp Pay",
-      logo: "whatsapp-logo.svg",
-      users: "100M+",
+    { 
+      name: "WhatsApp Pay", 
+      logo: "whatsapp-logo.svg", 
+      users: "100M+", 
       color: "bg-green-500",
-      description: "WhatsApp integrated payments",
-      isLocal: true
+      description: "Chat-based payments"
     }
   ];
 
@@ -896,69 +888,75 @@ function App() {
         <section id="upi-apps" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection className="text-center mb-16">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Compatible with All UPI Apps
-              </h2>
+              <div className="flex items-center justify-center mb-6">
+                <img 
+                  src="/upi-official-logo.svg" 
+                  alt="UPI Official Logo" 
+                  className="h-16 w-auto mr-4"
+                />
+                <div className="text-left">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+                    Universal UPI Support
+                  </h2>
+                  <p className="text-lg text-gray-600 mt-2">
+                    Compatible with all major UPI applications
+                  </p>
+                </div>
+              </div>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Our payment gateway seamlessly integrates with all major UPI applications, ensuring maximum reach for your customers
+                Your customers can pay using any UPI app they prefer. Our gateway supports all major UPI applications with 100% compatibility.
               </p>
             </AnimatedSection>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               {upiApps.map((app, index) => (
                 <AnimatedSection 
                   key={index}
-                  className="group bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 text-center border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
+                  className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
                 >
                   <div className="w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                     <img 
-                      src={app.isLocal ? `/${app.logo}` : app.logo}
-                      alt={`${app.name} logo`}
-                      className="w-full h-full object-contain rounded-lg"
+                      src={`/${app.logo}`} 
+                      alt={`${app.name} Logo`}
+                      className="w-full h-full object-contain"
                       loading="lazy"
                     />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{app.name}</h3>
                   <p className="text-sm text-gray-600 mb-2">{app.description}</p>
-                  <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-3 py-1">
-                    <Users className="h-4 w-4 text-blue-600 mr-1" />
-                    <span className="text-xs font-medium text-blue-800">{app.users} users</span>
+                  <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 rounded-full px-3 py-1">
+                    <Users className="h-4 w-4 text-green-600 mr-1" />
+                    <span className="text-sm font-medium text-green-800">{app.users} users</span>
                   </div>
                 </AnimatedSection>
               ))}
             </div>
 
-            <AnimatedSection className="text-center">
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full p-3">
-                    <Wallet className="h-8 w-8 text-white" />
-                  </div>
+            {/* UPI Stats */}
+            <AnimatedSection className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-8">
+              <div className="grid md:grid-cols-4 gap-6 text-center">
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-orange-600">8+</div>
+                  <div className="text-sm text-gray-600">UPI Apps Supported</div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Universal UPI Compatibility
-                </h3>
-                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Your customers can pay using any UPI app of their choice. Our gateway supports all major UPI applications, 
-                  providing flexibility and convenience for seamless transactions.
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-2xl font-bold text-blue-600">8+</div>
-                    <div className="text-sm text-gray-600">UPI Apps</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-2xl font-bold text-green-600">1B+</div>
-                    <div className="text-sm text-gray-600">Total Users</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-2xl font-bold text-purple-600">24/7</div>
-                    <div className="text-sm text-gray-600">Availability</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-2xl font-bold text-orange-600">100%</div>
-                    <div className="text-sm text-gray-600">Compatible</div>
-                  </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-orange-600">1B+</div>
+                  <div className="text-sm text-gray-600">Total Users</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-orange-600">24/7</div>
+                  <div className="text-sm text-gray-600">Availability</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-orange-600">100%</div>
+                  <div className="text-sm text-gray-600">Compatibility</div>
+                </div>
+              </div>
+              
+              <div className="mt-8 text-center">
+                <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 rounded-full px-6 py-3">
+                  <CreditCard className="h-5 w-5 text-orange-600 mr-2" />
+                  <span className="text-orange-800 font-medium">Accept payments from any UPI app</span>
                 </div>
               </div>
             </AnimatedSection>

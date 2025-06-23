@@ -17,16 +17,15 @@ import {
   Send,
   Check,
   Sparkles,
-  ExternalLink,
-  CreditCard,
-  Banknote
+  ExternalLink
 } from 'lucide-react';
 import { supabase, type ContactInquiry } from './lib/supabase';
 import { 
   trackContactFormSubmission, 
   trackButtonClick, 
   trackModalOpen,
-  trackSectionView 
+  trackSectionView,
+  trackGTMEvent 
 } from './lib/analytics';
 import { 
   sanitizeInput, 
@@ -142,13 +141,11 @@ function App() {
       getUserTrackingData().then(setUserTrackingData);
     }
     
-    // Track page view
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'page_view', {
-        page_title: 'OneGateway - Home',
-        page_location: window.location.href
-      });
-    }
+    // Track page view via GTM
+    trackGTMEvent('page_view', {
+      page_title: 'OneGateway - Home',
+      page_location: window.location.href
+    });
   }, []);
 
   useEffect(() => {
@@ -160,7 +157,7 @@ function App() {
   // Track section views on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features', 'clients', 'pricing', 'partners', 'upi-apps'];
+      const sections = ['features', 'clients', 'pricing', 'partners'];
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -377,65 +374,6 @@ function App() {
     { name: "Pay2Back", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlDersm3uNoCFYDGNKgKDPXMN8yZgjXNe_8g&s", color: "bg-white-600", description: "Cashback & Recharge" , url: "https://pay2back.in/", isImage: true, isExternalImage: true  },
     { name: "BillHub", logo: "billhub-logo.jpg", color: "bg-white", description: "Multi-Service Platform", isImage: true, url: "https://app.billhub.in/" },
     { name: "Okpe", logo: "https://play-lh.googleusercontent.com/tBkY2pHRdp7a4bChtpPqjCpJTVm3VwimXV0D4hV4IH6W_8neCmM_6FrVLWxR-OCgryU", color: "bg-white", description: "Mobile Recharge App", url: "https://okpe.in/", isImage: true, isExternalImage: true }
-  ];
-
-  const upiApps = [
-    { 
-      name: "PhonePe", 
-      logo: "phonepe-logo.svg", 
-      users: "450M+", 
-      color: "bg-purple-600",
-      description: "India's leading UPI app"
-    },
-    { 
-      name: "Google Pay", 
-      logo: "googlepay-logo.svg", 
-      users: "150M+", 
-      color: "bg-blue-600",
-      description: "Google's payment solution"
-    },
-    { 
-      name: "Paytm", 
-      logo: "paytm-logo.svg", 
-      users: "350M+", 
-      color: "bg-blue-500",
-      description: "Digital payments pioneer"
-    },
-    { 
-      name: "Amazon Pay", 
-      logo: "amazonpay-logo.svg", 
-      users: "50M+", 
-      color: "bg-orange-500",
-      description: "Amazon's payment service"
-    },
-    { 
-      name: "BHIM UPI", 
-      logo: "bhim-logo.svg", 
-      users: "40M+", 
-      color: "bg-green-600",
-      description: "Government's UPI app"
-    },
-    { 
-      name: "Freecharge", 
-      logo: "freecharge-logo.svg", 
-      users: "30M+", 
-      color: "bg-yellow-500",
-      description: "Recharge & bill payments"
-    },
-    { 
-      name: "MobiKwik", 
-      logo: "mobikwik-logo.svg", 
-      users: "120M+", 
-      color: "bg-red-500",
-      description: "Digital wallet & UPI"
-    },
-    { 
-      name: "WhatsApp Pay", 
-      logo: "whatsapp-logo.svg", 
-      users: "100M+", 
-      color: "bg-green-500",
-      description: "Chat-based payments"
-    }
   ];
 
   const stats = [
@@ -666,7 +604,6 @@ function App() {
               <div className="hidden md:flex items-center space-x-8">
                 <a href="#features" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Features</a>
                 <a href="#clients" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Clients</a>
-                <a href="#upi-apps" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">UPI Apps</a>
                 <a href="#pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Pricing</a>
                 <a href="#partners" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Partners</a>
                 <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Contact</a>
@@ -695,7 +632,6 @@ function App() {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Features</a>
                 <a href="#clients" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Clients</a>
-                <a href="#upi-apps" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">UPI Apps</a>
                 <a href="#pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
                 <a href="#partners" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Partners</a>
                 <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
@@ -884,87 +820,8 @@ function App() {
           </div>
         </section>
 
-        {/* UPI Apps Section */}
-        <section id="upi-apps" className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AnimatedSection className="text-center mb-16">
-              <div className="flex items-center justify-center mb-6">
-                <img 
-                  src="/upi-official-logo.svg" 
-                  alt="UPI Official Logo" 
-                  className="h-16 w-auto mr-4"
-                />
-                <div className="text-left">
-                  <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-                    Universal UPI Support
-                  </h2>
-                  <p className="text-lg text-gray-600 mt-2">
-                    Compatible with all major UPI applications
-                  </p>
-                </div>
-              </div>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Your customers can pay using any UPI app they prefer. Our gateway supports all major UPI applications with 100% compatibility.
-              </p>
-            </AnimatedSection>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {upiApps.map((app, index) => (
-                <AnimatedSection 
-                  key={index}
-                  className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center group border border-gray-100 hover:border-blue-200 hover:-translate-y-2"
-                >
-                  <div className="w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <img 
-                      src={`/${app.logo}`} 
-                      alt={`${app.name} Logo`}
-                      className="w-full h-full object-contain"
-                      loading="lazy"
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{app.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{app.description}</p>
-                  <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 rounded-full px-3 py-1">
-                    <Users className="h-4 w-4 text-green-600 mr-1" />
-                    <span className="text-sm font-medium text-green-800">{app.users} users</span>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-
-            {/* UPI Stats */}
-            <AnimatedSection className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-8">
-              <div className="grid md:grid-cols-4 gap-6 text-center">
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold text-orange-600">8+</div>
-                  <div className="text-sm text-gray-600">UPI Apps Supported</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold text-orange-600">1B+</div>
-                  <div className="text-sm text-gray-600">Total Users</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold text-orange-600">24/7</div>
-                  <div className="text-sm text-gray-600">Availability</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold text-orange-600">100%</div>
-                  <div className="text-sm text-gray-600">Compatibility</div>
-                </div>
-              </div>
-              
-              <div className="mt-8 text-center">
-                <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 rounded-full px-6 py-3">
-                  <CreditCard className="h-5 w-5 text-orange-600 mr-2" />
-                  <span className="text-orange-800 font-medium">Accept payments from any UPI app</span>
-                </div>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
-
         {/* Partners Section */}
-        <section id="partners" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section id="partners" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -1009,7 +866,7 @@ function App() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="py-20 bg-white">
+        <section id="pricing" className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">

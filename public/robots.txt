@@ -2,7 +2,11 @@ User-agent: *
 Allow: /
 
 # Sitemap
+Sitemap: https://onegateway.in/sitemap-index.xml
 Sitemap: https://onegateway.in/sitemap.xml
+Sitemap: https://onegateway.in/sitemap-blog.xml
+Sitemap: https://onegateway.in/sitemap-docs.xml
+Sitemap: https://onegateway.in/sitemap-images.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
@@ -12,6 +16,9 @@ Disallow: /api/
 Disallow: /.env
 Disallow: /admin/
 Disallow: /private/
+Disallow: /supabase/
+Disallow: /dist/
+Disallow: /node_modules/
 
 # Allow access to important pages
 Allow: /
@@ -20,11 +27,68 @@ Allow: /favicon.ico
 Allow: /favicon.svg
 Allow: /manifest.json
 Allow: /sw.js
+Allow: /sitemap*.xml
+Allow: /google*.html
+
+# Allow all images and assets
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+Allow: /*.ico
+Allow: /*.css
+Allow: /*.js
 
 # Block common bot traps
 Disallow: /wp-admin/
 Disallow: /wp-content/
 Disallow: /wp-includes/
 Disallow: /cgi-bin/
-Disallow: /admin/
 Disallow: /administrator/
+Disallow: /phpmyadmin/
+Disallow: /mysql/
+Disallow: /database/
+
+# SEO specific directives
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# Block aggressive crawlers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+User-agent: DotBot
+Crawl-delay: 10
+
+# Social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Cache directive
+Cache-Control: public, max-age=86400

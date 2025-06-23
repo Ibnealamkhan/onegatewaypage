@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Main Sitemap -->
+  <sitemap>
+    <loc>https://onegateway.in/sitemap.xml</loc>
+    <lastmod>2025-01-21</lastmod>
+  </sitemap>
+  
+  <!-- Blog Sitemap -->
+  <sitemap>
+    <loc>https://onegateway.in/sitemap-blog.xml</loc>
+    <lastmod>2025-01-21</lastmod>
+  </sitemap>
+  
+  <!-- Documentation Sitemap -->
+  <sitemap>
+    <loc>https://onegateway.in/sitemap-docs.xml</loc>
+    <lastmod>2025-01-21</lastmod>
+  </sitemap>
+  
+  <!-- Images Sitemap -->
+  <sitemap>
+    <loc>https://onegateway.in/sitemap-images.xml</loc>
+    <lastmod>2025-01-21</lastmod>
+  </sitemap>
+  
+</sitemapindex>

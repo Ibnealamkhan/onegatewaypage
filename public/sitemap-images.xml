@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Main Page Images -->
+  <url>
+    <loc>https://onegateway.in/</loc>
+    <image:image>
+      <image:loc>https://onegateway.in/favicon.svg</image:loc>
+      <image:title>OneGateway Logo</image:title>
+      <image:caption>OneGateway - Mobile Recharge Payment Gateway</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/upi-official-logo.svg</image:loc>
+      <image:title>Official UPI Logo</image:title>
+      <image:caption>Unified Payments Interface Official Logo</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- UPI Apps Images -->
+  <url>
+    <loc>https://onegateway.in/#upi-apps</loc>
+    <image:image>
+      <image:loc>https://onegateway.in/phonepe-logo.svg</image:loc>
+      <image:title>PhonePe Logo</image:title>
+      <image:caption>PhonePe UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/googlepay-logo.svg</image:loc>
+      <image:title>Google Pay Logo</image:title>
+      <image:caption>Google Pay UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/paytm-logo.svg</image:loc>
+      <image:title>Paytm Logo</image:title>
+      <image:caption>Paytm UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/amazonpay-logo.svg</image:loc>
+      <image:title>Amazon Pay Logo</image:title>
+      <image:caption>Amazon Pay UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/bhim-logo.svg</image:loc>
+      <image:title>BHIM Logo</image:title>
+      <image:caption>BHIM UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/freecharge-logo.svg</image:loc>
+      <image:title>FreeCharge Logo</image:title>
+      <image:caption>FreeCharge UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/mobikwik-logo.svg</image:loc>
+      <image:title>MobiKwik Logo</image:title>
+      <image:caption>MobiKwik UPI Payment App</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/whatsapp-logo.svg</image:loc>
+      <image:title>WhatsApp Pay Logo</image:title>
+      <image:caption>WhatsApp Pay UPI Payment Service</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Partners Images -->
+  <url>
+    <loc>https://onegateway.in/#partners</loc>
+    <image:image>
+      <image:loc>https://onegateway.in/cashfree.png</image:loc>
+      <image:title>Cashfree Logo</image:title>
+      <image:caption>Cashfree Payment Gateway Partner</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/Group-47850-3.png</image:loc>
+      <image:title>Sabpaisa Logo</image:title>
+      <image:caption>Sabpaisa Payment Gateway Partner</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://onegateway.in/razor_pay_icon-ICtywSbN.png</image:loc>
+      <image:title>Razorpay Logo</image:title>
+      <image:caption>Razorpay Payment Gateway Partner</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Client Images -->
+  <url>
+    <loc>https://onegateway.in/#clients</loc>
+    <image:image>
+      <image:loc>https://onegateway.in/billhub-logo.jpg</image:loc>
+      <image:title>BillHub Logo</image:title>
+      <image:caption>BillHub - Multi-Service Platform Client</image:caption>
+    </image:image>
+  </url>
+  
+</urlset>

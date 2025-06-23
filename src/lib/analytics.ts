@@ -18,6 +18,17 @@ export const trackGTMEvent = (eventName: string, parameters?: Record<string, any
   }
 };
 
+// Google Ads Conversion Tracking
+export const trackGoogleAdsConversion = (conversionLabel: string, value?: number, currency = 'INR') => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'conversion', {
+      'send_to': `AW-17260057723/${conversionLabel}`,
+      'value': value,
+      'currency': currency
+    });
+  }
+};
+
 // Google Analytics Events (via GTM)
 export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
   trackGTMEvent('custom_event', {
@@ -49,6 +60,11 @@ export const trackConversion = (eventName: string, parameters?: Record<string, a
     event_name: eventName,
     ...parameters
   });
+  
+  // Track Google Ads conversion for contact form submissions
+  if (eventName === 'contact_form_submit') {
+    trackGoogleAdsConversion('contact_form_conversion', 1);
+  }
 };
 
 // Specific event trackers
@@ -68,6 +84,9 @@ export const trackContactFormSubmission = (formData: {
 
   // Google Tag Manager
   trackGTMEvent('contact_form_submit', eventData);
+  
+  // Google Ads Conversion
+  trackGoogleAdsConversion('contact_form_conversion', 1);
   
   // Meta Pixel - Lead event
   trackPixelEvent('Lead', {
@@ -95,6 +114,11 @@ export const trackButtonClick = (buttonName: string, location: string) => {
 
   trackGTMEvent('button_click', eventData);
   trackAdRollEvent('click', { button_name: buttonName, location });
+  
+  // Track Google Ads conversion for CTA button clicks
+  if (buttonName === 'Contact Us' && ['hero-cta', 'pricing-cta', 'cta-primary'].includes(location)) {
+    trackGoogleAdsConversion('cta_click_conversion');
+  }
 };
 
 export const trackSectionView = (sectionName: string) => {
@@ -128,6 +152,11 @@ export const trackModalOpen = (modalName: string) => {
     content_name: modalName,
     content_type: 'modal'
   });
+  
+  // Track Google Ads conversion for contact modal opens
+  if (modalName === 'Contact Form') {
+    trackGoogleAdsConversion('modal_open_conversion');
+  }
 };
 
 export const trackPageView = (pageName: string) => {
@@ -139,6 +168,14 @@ export const trackPageView = (pageName: string) => {
   trackGTMEvent('page_view', eventData);
   trackPixelEvent('PageView');
   trackAdRollEvent('pageView');
+  
+  // Track Google Ads page view
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('config', 'AW-17260057723', {
+      page_title: pageName,
+      page_location: window.location.href
+    });
+  }
 };
 
 // Enhanced ecommerce tracking
@@ -171,6 +208,9 @@ export const trackPurchase = (transactionData: {
     currency: transactionData.currency,
     order_id: transactionData.transaction_id
   });
+  
+  // Track Google Ads purchase conversion
+  trackGoogleAdsConversion('purchase_conversion', transactionData.value, transactionData.currency);
 };
 
 // User engagement tracking
@@ -214,6 +254,9 @@ export const trackFileDownload = (fileName: string, fileType: string) => {
     file_name: fileName,
     file_type: fileType
   });
+  
+  // Track Google Ads download conversion
+  trackGoogleAdsConversion('download_conversion');
 };
 
 // External link tracking
@@ -246,4 +289,44 @@ export const trackAdRollCustomEvent = (eventName: string, properties?: Record<st
   if (typeof window !== 'undefined' && window.adroll) {
     window.adroll.track(eventName, properties);
   }
+};
+
+// Phone call tracking
+export const trackPhoneCall = (phoneNumber: string) => {
+  trackGTMEvent('phone_call', {
+    event_category: 'Contact',
+    phone_number: phoneNumber
+  });
+  
+  trackGoogleAdsConversion('phone_call_conversion');
+  
+  trackPixelEvent('Contact', {
+    content_name: 'Phone Call',
+    content_category: 'Contact'
+  });
+  
+  trackAdRollEvent('contact', {
+    contact_method: 'phone',
+    phone_number: phoneNumber
+  });
+};
+
+// Email click tracking
+export const trackEmailClick = (emailAddress: string) => {
+  trackGTMEvent('email_click', {
+    event_category: 'Contact',
+    email_address: emailAddress
+  });
+  
+  trackGoogleAdsConversion('email_click_conversion');
+  
+  trackPixelEvent('Contact', {
+    content_name: 'Email Click',
+    content_category: 'Contact'
+  });
+  
+  trackAdRollEvent('contact', {
+    contact_method: 'email',
+    email_address: emailAddress
+  });
 };

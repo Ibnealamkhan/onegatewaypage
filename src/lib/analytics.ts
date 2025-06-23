@@ -18,6 +18,17 @@ export const trackGTMEvent = (eventName: string, parameters?: Record<string, any
   }
 };
 
+// Google Analytics 4 Events (via gtag)
+export const trackGA4Event = (eventName: string, parameters?: Record<string, any>) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', eventName, {
+      ...parameters,
+      // Send to both GA4 and Google Ads
+      send_to: ['G-Q60G3QRWJW', 'AW-17260057723']
+    });
+  }
+};
+
 // Google Ads Conversion Tracking
 export const trackGoogleAdsConversion = (conversionLabel: string, value?: number, currency = 'INR') => {
   if (typeof window !== 'undefined' && window.gtag) {
@@ -35,6 +46,9 @@ export const trackEvent = (eventName: string, parameters?: Record<string, any>) 
     event_name: eventName,
     ...parameters
   });
+  
+  // Also track via GA4 directly
+  trackGA4Event(eventName, parameters);
 };
 
 // Meta Pixel Events
@@ -85,6 +99,13 @@ export const trackContactFormSubmission = (formData: {
   // Google Tag Manager
   trackGTMEvent('contact_form_submit', eventData);
   
+  // Google Analytics 4
+  trackGA4Event('generate_lead', {
+    currency: 'INR',
+    value: 1,
+    ...eventData
+  });
+  
   // Google Ads Conversion
   trackGoogleAdsConversion('contact_form_conversion', 1);
   
@@ -113,6 +134,7 @@ export const trackButtonClick = (buttonName: string, location: string) => {
   };
 
   trackGTMEvent('button_click', eventData);
+  trackGA4Event('click', eventData);
   trackAdRollEvent('click', { button_name: buttonName, location });
   
   // Track Google Ads conversion for CTA button clicks
@@ -129,6 +151,10 @@ export const trackSectionView = (sectionName: string) => {
   };
 
   trackGTMEvent('section_view', eventData);
+  trackGA4Event('view_item', {
+    item_name: sectionName,
+    item_category: 'Website Section'
+  });
   trackAdRollEvent('view_content', { content_name: sectionName });
 };
 
@@ -140,6 +166,10 @@ export const trackModalOpen = (modalName: string) => {
   };
 
   trackGTMEvent('modal_open', eventData);
+  trackGA4Event('view_item', {
+    item_name: modalName,
+    item_category: 'Modal'
+  });
   
   // Meta Pixel - ViewContent event
   trackPixelEvent('ViewContent', {
@@ -169,9 +199,20 @@ export const trackPageView = (pageName: string) => {
   trackPixelEvent('PageView');
   trackAdRollEvent('pageView');
   
+  // Track Google Analytics 4 page view
+  trackGA4Event('page_view', {
+    page_title: pageName,
+    page_location: window.location.href
+  });
+  
   // Track Google Ads page view
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('config', 'AW-17260057723', {
+      page_title: pageName,
+      page_location: window.location.href
+    });
+    
+    window.gtag('config', 'G-Q60G3QRWJW', {
       page_title: pageName,
       page_location: window.location.href
     });
@@ -194,6 +235,13 @@ export const trackPurchase = (transactionData: {
   trackGTMEvent('purchase', {
     event_category: 'Ecommerce',
     ...transactionData
+  });
+  
+  trackGA4Event('purchase', {
+    transaction_id: transactionData.transaction_id,
+    value: transactionData.value,
+    currency: transactionData.currency,
+    items: transactionData.items
   });
   
   trackPixelEvent('Purchase', {
@@ -221,6 +269,11 @@ export const trackUserEngagement = (engagementType: string, details?: Record<str
     ...details
   });
 
+  trackGA4Event('user_engagement', {
+    engagement_time_msec: details?.engagement_time || 0,
+    ...details
+  });
+
   trackAdRollEvent('engagement', {
     engagement_type: engagementType,
     ...details
@@ -232,6 +285,10 @@ export const trackScrollDepth = (scrollPercentage: number) => {
   trackGTMEvent('scroll', {
     event_category: 'User Behavior',
     scroll_depth: scrollPercentage
+  });
+
+  trackGA4Event('scroll', {
+    percent_scrolled: scrollPercentage
   });
 
   // Track significant scroll milestones with AdRoll
@@ -250,6 +307,11 @@ export const trackFileDownload = (fileName: string, fileType: string) => {
     file_type: fileType
   });
 
+  trackGA4Event('file_download', {
+    file_name: fileName,
+    file_extension: fileType
+  });
+
   trackAdRollEvent('download', {
     file_name: fileName,
     file_type: fileType
@@ -263,6 +325,12 @@ export const trackFileDownload = (fileName: string, fileType: string) => {
 export const trackExternalLink = (url: string, linkText: string) => {
   trackGTMEvent('click', {
     event_category: 'External Links',
+    link_url: url,
+    link_text: linkText,
+    outbound: true
+  });
+
+  trackGA4Event('click', {
     link_url: url,
     link_text: linkText,
     outbound: true
@@ -298,6 +366,11 @@ export const trackPhoneCall = (phoneNumber: string) => {
     phone_number: phoneNumber
   });
   
+  trackGA4Event('contact', {
+    method: 'phone',
+    phone_number: phoneNumber
+  });
+  
   trackGoogleAdsConversion('phone_call_conversion');
   
   trackPixelEvent('Contact', {
@@ -315,6 +388,11 @@ export const trackPhoneCall = (phoneNumber: string) => {
 export const trackEmailClick = (emailAddress: string) => {
   trackGTMEvent('email_click', {
     event_category: 'Contact',
+    email_address: emailAddress
+  });
+  
+  trackGA4Event('contact', {
+    method: 'email',
     email_address: emailAddress
   });
   

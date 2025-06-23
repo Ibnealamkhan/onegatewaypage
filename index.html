@@ -15,6 +15,36 @@
     })(window,document,'script','dataLayer','GTM-53PVZ9BN');</script>
     <!-- End Google Tag Manager -->
     
+    <!-- AdRoll Tracking -->
+    <script type="text/javascript">
+        adroll_adv_id = "ETQQ6EYMZRFTBF7XOEABZC";
+        adroll_pix_id = "OAMGROZH7BAFDGR6XBKPLI";
+        adroll_version = "2.0";
+
+        (function(w, d, e, o, a) {
+            w.__adroll_loaded = true;
+            w.adroll = w.adroll || [];
+            w.adroll.f = [ 'setProperties', 'identify', 'track', 'identify_email', 'get_cookie' ];
+            var roundtripUrl = "https://s.adroll.com/j/" + adroll_adv_id
+                    + "/roundtrip.js";
+            for (a = 0; a < w.adroll.f.length; a++) {
+                w.adroll[w.adroll.f[a]] = w.adroll[w.adroll.f[a]] || (function(n) {
+                    return function() {
+                        w.adroll.push([ n, arguments ])
+                    }
+                })(w.adroll.f[a])
+            }
+
+            e = d.createElement('script');
+            o = d.getElementsByTagName('script')[0];
+            e.async = 1;
+            e.src = roundtripUrl;
+            o.parentNode.insertBefore(e, o);
+        })(window, document);
+        adroll.track("pageView");
+    </script>
+    <!-- End AdRoll Tracking -->
+    
     <!-- Primary Meta Tags -->
     <title>OneGateway - Mobile Recharge Payment Gateway | 0.10% Charges</title>
     <meta name="title" content="OneGateway - Mobile Recharge Payment Gateway | 0.10% Charges" />
@@ -101,6 +131,7 @@
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://connect.facebook.net" crossorigin />
+    <link rel="preconnect" href="https://s.adroll.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
@@ -132,6 +163,7 @@
     <!-- DNS Prefetch -->
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     <link rel="dns-prefetch" href="//connect.facebook.net" />
+    <link rel="dns-prefetch" href="//s.adroll.com" />
     <link rel="dns-prefetch" href="//images.pexels.com" />
     <link rel="dns-prefetch" href="//play-lh.googleusercontent.com" />
   </head>

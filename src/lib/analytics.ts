@@ -4,6 +4,7 @@ declare global {
     gtag: (...args: any[]) => void;
     fbq: (...args: any[]) => void;
     dataLayer: any[];
+    adroll: any;
   }
 }
 
@@ -32,10 +33,18 @@ export const trackPixelEvent = (eventName: string, parameters?: Record<string, a
   }
 };
 
+// AdRoll Events
+export const trackAdRollEvent = (eventName: string, parameters?: Record<string, any>) => {
+  if (typeof window !== 'undefined' && window.adroll) {
+    window.adroll.track(eventName, parameters);
+  }
+};
+
 // Combined tracking function
 export const trackConversion = (eventName: string, parameters?: Record<string, any>) => {
   trackEvent(eventName, parameters);
   trackPixelEvent(eventName, parameters);
+  trackAdRollEvent(eventName, parameters);
   trackGTMEvent('conversion', {
     event_name: eventName,
     ...parameters
@@ -67,46 +76,69 @@ export const trackContactFormSubmission = (formData: {
     value: 1,
     currency: 'INR'
   });
+
+  // AdRoll - Lead event
+  trackAdRollEvent('lead', {
+    conversion_value: 1,
+    currency: 'INR',
+    email: formData.email
+  });
 };
 
 export const trackButtonClick = (buttonName: string, location: string) => {
-  trackGTMEvent('button_click', {
+  const eventData = {
     event_category: 'Engagement',
     event_label: buttonName,
     button_location: location,
     button_name: buttonName
-  });
+  };
+
+  trackGTMEvent('button_click', eventData);
+  trackAdRollEvent('click', { button_name: buttonName, location });
 };
 
 export const trackSectionView = (sectionName: string) => {
-  trackGTMEvent('section_view', {
+  const eventData = {
     event_category: 'Engagement',
     event_label: sectionName,
     section_name: sectionName
-  });
+  };
+
+  trackGTMEvent('section_view', eventData);
+  trackAdRollEvent('view_content', { content_name: sectionName });
 };
 
 export const trackModalOpen = (modalName: string) => {
-  trackGTMEvent('modal_open', {
+  const eventData = {
     event_category: 'Engagement',
     event_label: modalName,
     modal_type: modalName
-  });
+  };
+
+  trackGTMEvent('modal_open', eventData);
   
   // Meta Pixel - ViewContent event
   trackPixelEvent('ViewContent', {
     content_name: modalName,
     content_type: 'modal'
   });
+
+  // AdRoll - ViewContent event
+  trackAdRollEvent('view_content', {
+    content_name: modalName,
+    content_type: 'modal'
+  });
 };
 
 export const trackPageView = (pageName: string) => {
-  trackGTMEvent('page_view', {
+  const eventData = {
     page_title: pageName,
     page_location: window.location.href
-  });
-  
+  };
+
+  trackGTMEvent('page_view', eventData);
   trackPixelEvent('PageView');
+  trackAdRollEvent('pageView');
 };
 
 // Enhanced ecommerce tracking
@@ -133,12 +165,23 @@ export const trackPurchase = (transactionData: {
     content_ids: transactionData.items.map(item => item.item_id),
     content_type: 'product'
   });
+
+  trackAdRollEvent('purchase', {
+    conversion_value: transactionData.value,
+    currency: transactionData.currency,
+    order_id: transactionData.transaction_id
+  });
 };
 
 // User engagement tracking
 export const trackUserEngagement = (engagementType: string, details?: Record<string, any>) => {
   trackGTMEvent('user_engagement', {
     event_category: 'User Behavior',
+    engagement_type: engagementType,
+    ...details
+  });
+
+  trackAdRollEvent('engagement', {
     engagement_type: engagementType,
     ...details
   });
@@ -150,12 +193,24 @@ export const trackScrollDepth = (scrollPercentage: number) => {
     event_category: 'User Behavior',
     scroll_depth: scrollPercentage
   });
+
+  // Track significant scroll milestones with AdRoll
+  if ([25, 50, 75, 100].includes(scrollPercentage)) {
+    trackAdRollEvent('scroll', {
+      scroll_depth: scrollPercentage
+    });
+  }
 };
 
 // File download tracking
 export const trackFileDownload = (fileName: string, fileType: string) => {
   trackGTMEvent('file_download', {
     event_category: 'Downloads',
+    file_name: fileName,
+    file_type: fileType
+  });
+
+  trackAdRollEvent('download', {
     file_name: fileName,
     file_type: fileType
   });
@@ -169,4 +224,26 @@ export const trackExternalLink = (url: string, linkText: string) => {
     link_text: linkText,
     outbound: true
   });
+
+  trackAdRollEvent('click', {
+    link_url: url,
+    link_text: linkText,
+    link_type: 'external'
+  });
+};
+
+// AdRoll specific tracking functions
+export const trackAdRollIdentify = (email: string, additionalData?: Record<string, any>) => {
+  if (typeof window !== 'undefined' && window.adroll) {
+    window.adroll.identify({
+      email: email,
+      ...additionalData
+    });
+  }
+};
+
+export const trackAdRollCustomEvent = (eventName: string, properties?: Record<string, any>) => {
+  if (typeof window !== 'undefined' && window.adroll) {
+    window.adroll.track(eventName, properties);
+  }
 };
